@@ -22,6 +22,13 @@ jobs:
         with:
           profile: minimal
 
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: "rustdoc"
+          cache-targets: true
+          cache-on-failure: true
+
       - name: Create rustdoc
         run: cargo doc --all --workspace --document-private-items
 
