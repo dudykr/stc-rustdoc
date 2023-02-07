@@ -1,0 +1,42 @@
+name: Docs
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  push:
+    branches:
+      -  main
+
+jobs:
+  rustdoc:
+    name: Rustdoc
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: 'dudykr/stc'
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+
+      - name: Create rustdoc
+        run: cargo doc --all --workspace --document-private-items
+
+      - name: Create CNAME
+        run: |
+          echo 'rustdoc.stc.dudy.dev' > target/doc/CNAME
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: target/doc
+          clean: true
+          git-config-email: bot@dudy.dev
+          repository-name: dudykr/stc-rustdoc
+          commit-message: "Update rustdoc"
+          single-commit: true
