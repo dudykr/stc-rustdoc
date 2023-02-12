@@ -39,11 +39,11 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.8
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
           branch: gh-pages
           folder: target/doc
           clean: true
-          git-config-email: bot@dudy.dev
+          git-config-email: bot@swc.rs
           repository-name: dudykr/stc-rustdoc
           commit-message: "Update rustdoc"
           single-commit: true
