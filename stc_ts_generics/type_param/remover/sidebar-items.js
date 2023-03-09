@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["noop",""]],"struct":[["Scope",""],["TypeParamRemover","Removes conflicting type parameters from children."]]};

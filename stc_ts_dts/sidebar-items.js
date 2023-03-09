@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["CollectorPhase",""]],"fn":[["apply_mutations",""],["cleanup_module_for_dts","Make `module` suitable for .d.ts file."]],"mod":[["ambient",""],["dce","Dead code elimination for types."],["mutations",""]],"struct":[["Dts",""],["TypeUsageCollector",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["digraph","`GraphMap<N, E, Ty>` is a graph datastructure where node values are mapping keys."]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["prevent_tuple_to_array","TODO(kdy1): Optimize by visiting only tuple types."]],"mod":[["metadata",""]],"struct":[["TupleToArray",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["fixer","Fixes ast nodes before printing so semantics are preserved."],["paren_remover",""]]};

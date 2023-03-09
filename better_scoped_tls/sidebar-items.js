@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["scoped_tls","See [scoped_tls::scoped_thread_local] for actual documentation."]],"struct":[["ScopedKey","Wrapper for [scoped_tls::ScopedKey] with better error messages."]]};

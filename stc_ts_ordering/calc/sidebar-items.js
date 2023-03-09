@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["calc_one",""],["calc_order",""],["to_graph","Returns `(cycles, graph)`."]],"struct":[["Deps",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["ModuleInfo",""]],"trait":[["Load","TODO(kdy1): Refactor after merging https://github.com/dudykr/stc/pull/601"]]};

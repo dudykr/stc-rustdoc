@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["resource","Resource Semantic Conventions"],["trace","Trace Semantic Conventions"]]};

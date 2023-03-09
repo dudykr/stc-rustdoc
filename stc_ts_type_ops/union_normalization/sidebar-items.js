@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["ObjectUnionNormalizer","See https://github.com/dudykr/stc/blob/e8f1daf0e336d978a1de5479ad9676093faf5921/crates/stc_ts_type_checker/tests/conformance/expressions/objectLiterals/objectLiteralNormalization.ts"]]};

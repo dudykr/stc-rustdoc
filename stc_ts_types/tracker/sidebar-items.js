@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Tracker","A type used to track all type creations. You can construct this type using `Default::default()` and it will print a log message."]]};

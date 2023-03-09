@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["hygiene","See [hygiene_with_config] for doc. Creates a `hygiene` pass with default value of [Config]."],["hygiene_with_config","The pass actually modifies the identifiers in the way that different identifier (with respect to span hygiene) becomes different identifier. (e.g. `a1` for `a#6`, `a2` for `a#23`)"]],"struct":[["Config",""]]};

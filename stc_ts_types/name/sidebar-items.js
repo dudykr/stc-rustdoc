@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Name","Efficient alternative for names with variable length like `foo.bar.baz.qux`."]]};

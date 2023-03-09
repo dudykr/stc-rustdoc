@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["try_with_handler","Try operation with a [Handler] and prints the errors as a [String] wrapped by [Err]."]],"struct":[["HandlerOpts",""]]};

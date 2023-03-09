@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["cpu_count",""],["should_work",""]],"trait":[["Check",""],["Items","This is considered as a private type and it’s NOT A PUBLIC API."],["ParExplode",""],["ParFold",""],["ParVisit",""],["ParVisitMut",""],["Parallel",""],["ParallelExt",""]]};

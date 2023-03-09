@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["ClassId","Used to distinguish private class properties."]]};

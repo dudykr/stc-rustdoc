@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Assumptions","Alternative for https://babeljs.io/docs/en/assumptions"]]};

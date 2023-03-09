@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["BindingKind",""]],"fn":[["collect_bindings",""]],"struct":[["BindingCollector",""],["Bindings",""],["KnownTypeVisitor",""]]};

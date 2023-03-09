@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":[["Map","Copied from `syntax::ptr::P` of rustc."]]};

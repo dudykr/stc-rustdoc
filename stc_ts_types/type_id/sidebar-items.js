@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["class",""],["destructure",""],["symbol",""]],"struct":[["ClassId","Used to distinguish private class properties."],["DestructureId",""],["SymbolId",""]]};

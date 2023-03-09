@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Derive","Generics of derived impl item."]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["cache_map",""],["cache_mode",""],["key",""]],"struct":[["NoRefInKey",""],["NoRevoke",""],["RefFinder",""],["TypeCache","TODO(kdy1): pub expand_cache: CacheMap<(RTsEntityName, Option), Type, RevokeOnTypeDecl>,"]]};

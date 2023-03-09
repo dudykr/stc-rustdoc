@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Collects OpenTelemetry spans and reports them to a given Jaeger `agent` or `collector` endpoint. See the Jaeger Docs for details about Jaeger and deployment information."><meta name="keywords" content="rust, rustlang, rust-lang, opentelemetry_jaeger"><title>opentelemetry_jaeger - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../normalize.css"><link rel="stylesheet" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../ayu.css" disabled><link rel="stylesheet" href="../dark.css" disabled><link rel="stylesheet" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="../crates.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../opentelemetry_jaeger/index.html"><div class="logo-container"><img src="https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/assets/logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../opentelemetry_jaeger/index.html"><div class="logo-container">
+                    <img src="https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/assets/logo.svg" alt="logo"></div></a><h2 class="location"><a href="#">Crate opentelemetry_jaeger</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.15.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul></div><section><div class="block"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div></section></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../opentelemetry_jaeger/index.html">
+                        <img src="https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/assets/logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="main-heading"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">opentelemetry_jaeger</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/opentelemetry_jaeger/lib.rs.html#1-598">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Collects OpenTelemetry spans and reports them to a given Jaeger
+<code>agent</code> or <code>collector</code> endpoint. See the <a href="https://www.jaegertracing.io/docs/">Jaeger Docs</a> for details
+about Jaeger and deployment information.</p>
+<p><em>Compiler support: <a href="#supported-rust-versions">requires <code>rustc</code> 1.46+</a></em></p>
+<h4 id="quickstart"><a href="#quickstart">Quickstart</a></h4>
+<p>First make sure you have a running version of the Jaeger instance
+you want to send data to:</p>
+<div class="example-wrap"><pre class="language-shell"><code>$ docker run -d -p6831:6831/udp -p6832:6832/udp -p16686:16686 -p14268:14268 jaegertracing/all-in-one:latest</code></pre></div>
+<p>Then install a new jaeger pipeline with the recommended defaults to start
+exporting telemetry:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>opentelemetry::trace::Tracer;
+<span class="kw">use </span>opentelemetry::global;
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), opentelemetry::trace::TraceError&gt; {
+    global::set_text_map_propagator(opentelemetry_jaeger::Propagator::new());
+    <span class="kw">let </span>tracer = opentelemetry_jaeger::new_pipeline().install_simple()<span class="question-mark">?</span>;
+
+    tracer.in_span(<span class="string">&quot;doing_work&quot;</span>, |cx| {
+        <span class="comment">// Traced app logic here...
+    </span>});
+
+    global::shutdown_tracer_provider(); <span class="comment">// export remaining spans
+
+    </span><span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<h3 id="performance"><a href="#performance">Performance</a></h3>
+<p>For optimal performance, a batch exporter is recommended as the simple exporter
+will export each span synchronously on drop. You can enable the [<code>rt-tokio</code>],
+[<code>rt-tokio-current-thread</code>] or [<code>rt-async-std</code>] features and specify a runtime
+on the pipeline builder to have a batch exporter configured for you
+automatically.</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+opentelemetry = { version = &quot;*&quot;, features = [&quot;rt-tokio&quot;] }
+opentelemetry-jaeger = { version = &quot;*&quot;, features = [&quot;rt-tokio&quot;] }</code></pre></div>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>tracer = opentelemetry_jaeger::new_pipeline()
+    .install_batch(opentelemetry::runtime::Tokio)<span class="question-mark">?</span>;</code></pre></div>
+<h4 id="jaeger-exporter-from-environment-variables"><a href="#jaeger-exporter-from-environment-variables">Jaeger Exporter From Environment Variables</a></h4>
+<p>The jaeger pipeline builder can be configured dynamically via environment
+variables. All variables are optional, a full list of accepted options can
+be found in the <a href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/sdk-environment-variables.md#jaeger-exporter">jaeger variables spec</a>.</p>
+<h4 id="jaeger-collector-example"><a href="#jaeger-collector-example">Jaeger Collector Example</a></h4>
+<p>If you want to skip the agent and submit spans directly to a Jaeger collector,
+you can enable the optional <code>collector_client</code> feature for this crate. This
+example expects a Jaeger collector running on <code>http://localhost:14268</code>.</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+opentelemetry-jaeger = { version = &quot;..&quot;, features = [&quot;collector_client&quot;, &quot;isahc&quot;] }</code></pre></div>
+<p>Then you can use the <a href="PipelineBuilder::with_collector_endpoint()"><code>with_collector_endpoint</code></a> method to specify the endpoint:</p>
+
+<div class="example-wrap ignore"><div class='tooltip'>ⓘ</div><pre class="rust rust-example-rendered"><code><span class="comment">// Note that this requires the `collector_client` feature.
+// We enabled the `isahc` feature for a default isahc http client.
+// You can also provide your own implementation via new_pipeline().with_http_client() method.
+</span><span class="kw">use </span>opentelemetry::trace::{Tracer, TraceError};
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), TraceError&gt; {
+    <span class="kw">let </span>tracer = opentelemetry_jaeger::new_pipeline()
+        .with_collector_endpoint(<span class="string">&quot;http://localhost:14268/api/traces&quot;</span>)
+        <span class="comment">// optionally set username and password as well.
+        </span>.with_collector_username(<span class="string">&quot;username&quot;</span>)
+        .with_collector_password(<span class="string">&quot;s3cr3t&quot;</span>)
+        .install_simple()<span class="question-mark">?</span>;
+
+    tracer.in_span(<span class="string">&quot;doing_work&quot;</span>, |cx| {
+        <span class="comment">// Traced app logic here...
+    </span>});
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<h3 id="kitchen-sink-full-configuration"><a href="#kitchen-sink-full-configuration">Kitchen Sink Full Configuration</a></h3>
+<p>Example showing how to override all configuration options. See the
+<a href="struct.PipelineBuilder.html" title="PipelineBuilder"><code>PipelineBuilder</code></a> docs for details of each option.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>opentelemetry::{KeyValue, trace::{Tracer, TraceError}};
+<span class="kw">use </span>opentelemetry::sdk::{trace::{<span class="self">self</span>, IdGenerator, Sampler}, Resource};
+<span class="kw">use </span>opentelemetry::global;
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), TraceError&gt; {
+    global::set_text_map_propagator(opentelemetry_jaeger::Propagator::new());
+    <span class="kw">let </span>tracer = opentelemetry_jaeger::new_pipeline()
+        .with_agent_endpoint(<span class="string">&quot;localhost:6831&quot;</span>)
+        .with_service_name(<span class="string">&quot;my_app&quot;</span>)
+        .with_tags(<span class="macro">vec!</span>[KeyValue::new(<span class="string">&quot;process_key&quot;</span>, <span class="string">&quot;process_value&quot;</span>)])
+        .with_max_packet_size(<span class="number">9_216</span>)
+        .with_trace_config(
+            trace::config()
+                .with_sampler(Sampler::AlwaysOn)
+                .with_id_generator(IdGenerator::default())
+                .with_max_events_per_span(<span class="number">64</span>)
+                .with_max_attributes_per_span(<span class="number">16</span>)
+                .with_max_events_per_span(<span class="number">16</span>)
+                .with_resource(Resource::new(<span class="macro">vec!</span>[KeyValue::new(<span class="string">&quot;key&quot;</span>, <span class="string">&quot;value&quot;</span>)])),
+        )
+        .install_batch(opentelemetry::runtime::Tokio)<span class="question-mark">?</span>;
+
+    tracer.in_span(<span class="string">&quot;doing_work&quot;</span>, |cx| {
+        <span class="comment">// Traced app logic here...
+    </span>});
+
+    global::shutdown_tracer_provider(); <span class="comment">// export remaining spans
+
+    </span><span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<h3 id="crate-feature-flags"><a href="#crate-feature-flags">Crate Feature Flags</a></h3>
+<p>The following crate feature flags are available:</p>
+<ul>
+<li>
+<p><code>collector_client</code>: Export span data directly to a Jaeger collector. User MUST provide the http client.</p>
+</li>
+<li>
+<p><code>surf_collector_client</code>: Export span data with Jaeger collector backed by a surf default http client.</p>
+</li>
+<li>
+<p><code>reqwest_collector_client</code>: Export span data with Jaeger collector backed by a reqwest http client.</p>
+</li>
+<li>
+<p><code>reqwest_blocking_collector_client</code>: Export span data with Jaeger collector backed by a reqwest blocking http client.</p>
+</li>
+<li>
+<p><code>isahc_collector_client</code>: Export span data with Jaeger collector backed by a isahc http client.</p>
+</li>
+<li>
+<p><code>wasm_collector_client</code>: Enable collector in wasm.</p>
+</li>
+</ul>
+<p>Support for recording and exporting telemetry asynchronously can be added
+via the following flags, it extends the <a href="https://crates.io/crates/opentelemetry"><code>opentelemetry</code></a> feature:</p>
+<ul>
+<li>
+<p><code>rt-tokio</code>: Enable sending UDP packets to Jaeger agent asynchronously when <a href="https://tokio.rs"><code>Tokio</code></a> runtime is used.</p>
+</li>
+<li>
+<p><code>rt-tokio-current-thread</code>: Enable sending UDP packets to Jaeger agent asynchronously when [<code>TokioCurrentThread</code>] runtime is used.</p>
+</li>
+<li>
+<p><code>rt-async-std</code>: Enable sending UDP packets to Jaeger agent asynchronously when [<code>AsyncStd</code>] runtime is used.</p>
+</li>
+</ul>
+<h3 id="supported-rust-versions"><a href="#supported-rust-versions">Supported Rust Versions</a></h3>
+<p>OpenTelemetry is built against the latest stable release. The minimum
+supported version is 1.46. The current OpenTelemetry version is not
+guaranteed to build on Rust versions earlier than the minimum supported
+version.</p>
+<p>The current stable Rust compiler and the three most recent minor versions
+before it will always be supported. For example, if the current stable
+compiler version is 1.49, the minimum supported version will not be
+increased past 1.46, three minor versions prior. Increasing the minimum
+supported compiler version is not considered a semver breaking change as
+long as doing so complies with this policy.</p>
+</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Exporter.html" title="opentelemetry_jaeger::Exporter struct">Exporter</a></div><div class="item-right docblock-short">Jaeger span exporter</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.PipelineBuilder.html" title="opentelemetry_jaeger::PipelineBuilder struct">PipelineBuilder</a></div><div class="item-right docblock-short">Jaeger exporter builder</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Process.html" title="opentelemetry_jaeger::Process struct">Process</a></div><div class="item-right docblock-short">Jaeger process configuration</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Propagator.html" title="opentelemetry_jaeger::Propagator struct">Propagator</a></div><div class="item-right docblock-short">The Jaeger propagator propagates span contexts in jaeger’s propagation format.</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2><div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Error.html" title="opentelemetry_jaeger::Error enum">Error</a></div><div class="item-right docblock-short">Wrap type for errors from opentelemetry jaeger</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2><div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.JaegerTraceRuntime.html" title="opentelemetry_jaeger::JaegerTraceRuntime trait">JaegerTraceRuntime</a></div><div class="item-right docblock-short">Jaeger Trace Runtime is an extension to <a href="../opentelemetry/sdk/trace/runtime/trait.TraceRuntime.html"><code>TraceRuntime</code></a>. Currently it provides a UDP socket used
+by <a href="crate::exporter::agent::AgentAsyncClientUdp"><code>AgentAsyncClientUdp</code></a>.</div></div></div><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2><div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.new_pipeline.html" title="opentelemetry_jaeger::new_pipeline fn">new_pipeline</a></div><div class="item-right docblock-short">Create a new Jaeger exporter pipeline builder.</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="opentelemetry_jaeger" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (e7119a030 2022-09-22)" ></div></body></html>

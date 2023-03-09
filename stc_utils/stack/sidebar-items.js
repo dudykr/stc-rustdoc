@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["start","Start tracking for stack overflows. [track] will return error on `max`-th call. (Currently it’s noop)"],["track","Should be stored as a variable like `let _stack = stack::track(span);`."],["with_ctx","closure argument: Stack left"]],"struct":[["StackOverflowError",""],["StartGuard",""],["TrackGuard",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["VarCollector","This collects variables bindings while ignoring if it’s nested in expression."]]};

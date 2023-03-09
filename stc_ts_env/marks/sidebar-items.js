@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Marks","The caller should ensure that [swc_common::GLOBALS] and `Marks` is matched."]],"trait":[["MarkExt",""]]};

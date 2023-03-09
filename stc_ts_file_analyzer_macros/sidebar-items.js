@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":[["extra_validator","This macro converts"],["validator","This trait implements Validate with proper types."]],"struct":[["LifetimeReplacer",""]]};

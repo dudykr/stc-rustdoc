@@ -1,0 +1,1258 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/opentelemetry-semantic-conventions-0.8.0/src/resource.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>resource.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../opentelemetry_semantic_conventions/index.html"><div class="logo-container"><img src="https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/assets/logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../opentelemetry_semantic_conventions/index.html"><div class="logo-container">
+                    <img src="https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/assets/logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../opentelemetry_semantic_conventions/index.html">
+                        <img src="https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/assets/logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+</pre><pre class="rust"><code><span class="comment">// DO NOT EDIT, this is an auto-generated file
+//
+// If you want to update the file:
+// - Edit the template at scripts/templates/semantic_attributes.rs.j2
+// - Run the script at scripts/generate-consts-from-spec.sh
+
+</span><span class="doccomment">//! # Resource Semantic Conventions
+//!
+//! The [resource semantic conventions] define a set of standardized attributes
+//! to be used in `Resource`s.
+//!
+//! [resource semantic conventions]: https://github.com/open-telemetry/opentelemetry-specification/tree/master/specification/resource/semantic_conventions
+//!
+//! ## Usage
+//!
+//! ```rust,no_run
+//! use opentelemetry::sdk;
+//! use opentelemetry_semantic_conventions as semcov;
+//!
+//! let _tracer = opentelemetry::sdk::export::trace::stdout::new_pipeline()
+//!     .with_trace_config(sdk::trace::config().with_resource(sdk::Resource::new(vec![
+//!         semcov::resource::SERVICE_NAME.string(&quot;my-service&quot;),
+//!         semcov::resource::SERVICE_NAMESPACE.string(&quot;my-namespace&quot;),
+//!     ])))
+//!     .install_simple();
+//! ```
+
+</span><span class="kw">use </span>opentelemetry::Key;
+
+<span class="doccomment">/// Name of the cloud provider.
+///
+/// # Examples
+///
+/// - gcp
+</span><span class="kw">pub const </span>CLOUD_PROVIDER: Key = Key::from_static_str(<span class="string">&quot;cloud.provider&quot;</span>);
+
+<span class="doccomment">/// The cloud account ID the resource is assigned to.
+///
+/// # Examples
+///
+/// - 111111111111
+/// - opentelemetry
+</span><span class="kw">pub const </span>CLOUD_ACCOUNT_ID: Key = Key::from_static_str(<span class="string">&quot;cloud.account.id&quot;</span>);
+
+<span class="doccomment">/// The geographical region the resource is running. Refer to your provider&amp;#39;s docs to see the available regions, for example [AWS regions](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/), [Azure regions](https://azure.microsoft.com/en-us/global-infrastructure/geographies/), or [Google Cloud regions](https://cloud.google.com/about/locations).
+///
+/// # Examples
+///
+/// - us-central1
+/// - us-east-1
+</span><span class="kw">pub const </span>CLOUD_REGION: Key = Key::from_static_str(<span class="string">&quot;cloud.region&quot;</span>);
+
+<span class="doccomment">/// Cloud regions often have multiple, isolated locations known as zones to increase availability. Availability zone represents the zone where the resource is running.
+///
+/// Availability zones are called &amp;#34;zones&amp;#34; on Google Cloud.
+///
+/// # Examples
+///
+/// - us-east-1c
+</span><span class="kw">pub const </span>CLOUD_AVAILABILITY_ZONE: Key = Key::from_static_str(<span class="string">&quot;cloud.availability_zone&quot;</span>);
+
+<span class="doccomment">/// The cloud platform in use.
+///
+/// The prefix of the service SHOULD match the one specified in `cloud.provider`.
+///
+/// # Examples
+///
+/// - aws_ec2
+/// - azure_vm
+/// - gcp_compute_engine
+</span><span class="kw">pub const </span>CLOUD_PLATFORM: Key = Key::from_static_str(<span class="string">&quot;cloud.platform&quot;</span>);
+
+<span class="doccomment">/// The Amazon Resource Name (ARN) of an [ECS container instance](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_instances.html).
+///
+/// # Examples
+///
+/// - arn:aws:ecs:us-west-1:123456789123:container/32624152-9086-4f0e-acae-1a75b14fe4d9
+</span><span class="kw">pub const </span>AWS_ECS_CONTAINER_ARN: Key = Key::from_static_str(<span class="string">&quot;aws.ecs.container.arn&quot;</span>);
+
+<span class="doccomment">/// The ARN of an [ECS cluster](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/clusters.html).
+///
+/// # Examples
+///
+/// - arn:aws:ecs:us-west-2:123456789123:cluster/my-cluster
+</span><span class="kw">pub const </span>AWS_ECS_CLUSTER_ARN: Key = Key::from_static_str(<span class="string">&quot;aws.ecs.cluster.arn&quot;</span>);
+
+<span class="doccomment">/// The [launch type](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html) for an ECS task.
+///
+/// # Examples
+///
+/// - ec2
+/// - fargate
+</span><span class="kw">pub const </span>AWS_ECS_LAUNCHTYPE: Key = Key::from_static_str(<span class="string">&quot;aws.ecs.launchtype&quot;</span>);
+
+<span class="doccomment">/// The ARN of an [ECS task definition](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html).
+///
+/// # Examples
+///
+/// - arn:aws:ecs:us-west-1:123456789123:task/10838bed-421f-43ef-870a-f43feacbbb5b
+</span><span class="kw">pub const </span>AWS_ECS_TASK_ARN: Key = Key::from_static_str(<span class="string">&quot;aws.ecs.task.arn&quot;</span>);
+
+<span class="doccomment">/// The task definition family this task definition is a member of.
+///
+/// # Examples
+///
+/// - opentelemetry-family
+</span><span class="kw">pub const </span>AWS_ECS_TASK_FAMILY: Key = Key::from_static_str(<span class="string">&quot;aws.ecs.task.family&quot;</span>);
+
+<span class="doccomment">/// The revision for this task definition.
+///
+/// # Examples
+///
+/// - 8
+/// - 26
+</span><span class="kw">pub const </span>AWS_ECS_TASK_REVISION: Key = Key::from_static_str(<span class="string">&quot;aws.ecs.task.revision&quot;</span>);
+
+<span class="doccomment">/// The ARN of an EKS cluster.
+///
+/// # Examples
+///
+/// - arn:aws:ecs:us-west-2:123456789123:cluster/my-cluster
+</span><span class="kw">pub const </span>AWS_EKS_CLUSTER_ARN: Key = Key::from_static_str(<span class="string">&quot;aws.eks.cluster.arn&quot;</span>);
+
+<span class="doccomment">/// The name(s) of the AWS log group(s) an application is writing to.
+///
+/// Multiple log groups must be supported for cases like multi-container applications, where a single application has sidecar containers, and each write to their own log group.
+///
+/// # Examples
+///
+/// - /aws/lambda/my-function
+/// - opentelemetry-service
+</span><span class="kw">pub const </span>AWS_LOG_GROUP_NAMES: Key = Key::from_static_str(<span class="string">&quot;aws.log.group.names&quot;</span>);
+
+<span class="doccomment">/// The Amazon Resource Name(s) (ARN) of the AWS log group(s).
+///
+/// See the [log group ARN format documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/iam-access-control-overview-cwl.html#CWL_ARN_Format).
+///
+/// # Examples
+///
+/// - arn:aws:logs:us-west-1:123456789012:log-group:/aws/my/group:*
+</span><span class="kw">pub const </span>AWS_LOG_GROUP_ARNS: Key = Key::from_static_str(<span class="string">&quot;aws.log.group.arns&quot;</span>);
+
+<span class="doccomment">/// The name(s) of the AWS log stream(s) an application is writing to.
+///
+/// # Examples
+///
+/// - logs/main/10838bed-421f-43ef-870a-f43feacbbb5b
+</span><span class="kw">pub const </span>AWS_LOG_STREAM_NAMES: Key = Key::from_static_str(<span class="string">&quot;aws.log.stream.names&quot;</span>);
+
+<span class="doccomment">/// The ARN(s) of the AWS log stream(s).
+///
+/// See the [log stream ARN format documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/iam-access-control-overview-cwl.html#CWL_ARN_Format). One log group can contain several log streams, so these ARNs necessarily identify both a log group and a log stream.
+///
+/// # Examples
+///
+/// - arn:aws:logs:us-west-1:123456789012:log-group:/aws/my/group:log-stream:logs/main/10838bed-421f-43ef-870a-f43feacbbb5b
+</span><span class="kw">pub const </span>AWS_LOG_STREAM_ARNS: Key = Key::from_static_str(<span class="string">&quot;aws.log.stream.arns&quot;</span>);
+
+<span class="doccomment">/// Container name.
+///
+/// # Examples
+///
+/// - opentelemetry-autoconf
+</span><span class="kw">pub const </span>CONTAINER_NAME: Key = Key::from_static_str(<span class="string">&quot;container.name&quot;</span>);
+
+<span class="doccomment">/// Container ID. Usually a UUID, as for example used to [identify Docker containers](https://docs.docker.com/engine/reference/run/#container-identification). The UUID might be abbreviated.
+///
+/// # Examples
+///
+/// - a3bf90e006b2
+</span><span class="kw">pub const </span>CONTAINER_ID: Key = Key::from_static_str(<span class="string">&quot;container.id&quot;</span>);
+
+<span class="doccomment">/// The container runtime managing this container.
+///
+/// # Examples
+///
+/// - docker
+/// - containerd
+/// - rkt
+</span><span class="kw">pub const </span>CONTAINER_RUNTIME: Key = Key::from_static_str(<span class="string">&quot;container.runtime&quot;</span>);
+
+<span class="doccomment">/// Name of the image the container was built on.
+///
+/// # Examples
+///
+/// - gcr.io/opentelemetry/operator
+</span><span class="kw">pub const </span>CONTAINER_IMAGE_NAME: Key = Key::from_static_str(<span class="string">&quot;container.image.name&quot;</span>);
+
+<span class="doccomment">/// Container image tag.
+///
+/// # Examples
+///
+/// - 0.1
+</span><span class="kw">pub const </span>CONTAINER_IMAGE_TAG: Key = Key::from_static_str(<span class="string">&quot;container.image.tag&quot;</span>);
+
+<span class="doccomment">/// Name of the [deployment environment](https://en.wikipedia.org/wiki/Deployment_environment) (aka deployment tier).
+///
+/// # Examples
+///
+/// - staging
+/// - production
+</span><span class="kw">pub const </span>DEPLOYMENT_ENVIRONMENT: Key = Key::from_static_str(<span class="string">&quot;deployment.environment&quot;</span>);
+
+<span class="doccomment">/// A unique identifier representing the device.
+///
+/// The device identifier MUST only be defined using the values outlined below. This value is not an advertising identifier and MUST NOT be used as such. On iOS (Swift or Objective-C), this value MUST be equal to the [vendor identifier](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor). On Android (Java or Kotlin), this value MUST be equal to the Firebase Installation ID or a globally unique UUID which is persisted across sessions in your application. More information can be found [here](https://developer.android.com/training/articles/user-data-ids) on best practices and exact implementation details. Caution should be taken when storing personal data or anything which can identify a user. GDPR and data protection laws may apply, ensure you do your own due diligence.
+///
+/// # Examples
+///
+/// - 2ab2916d-a51f-4ac8-80ee-45ac31a28092
+</span><span class="kw">pub const </span>DEVICE_ID: Key = Key::from_static_str(<span class="string">&quot;device.id&quot;</span>);
+
+<span class="doccomment">/// The model identifier for the device.
+///
+/// It&amp;#39;s recommended this value represents a machine readable version of the model identifier rather than the market or consumer-friendly name of the device.
+///
+/// # Examples
+///
+/// - iPhone3,4
+/// - SM-G920F
+</span><span class="kw">pub const </span>DEVICE_MODEL_IDENTIFIER: Key = Key::from_static_str(<span class="string">&quot;device.model.identifier&quot;</span>);
+
+<span class="doccomment">/// The marketing name for the device model.
+///
+/// It&amp;#39;s recommended this value represents a human readable version of the device model rather than a machine readable alternative.
+///
+/// # Examples
+///
+/// - iPhone 6s Plus
+/// - Samsung Galaxy S6
+</span><span class="kw">pub const </span>DEVICE_MODEL_NAME: Key = Key::from_static_str(<span class="string">&quot;device.model.name&quot;</span>);
+
+<span class="doccomment">/// The name of the function being executed.
+///
+/// # Examples
+///
+/// - my-function
+</span><span class="kw">pub const </span>FAAS_NAME: Key = Key::from_static_str(<span class="string">&quot;faas.name&quot;</span>);
+
+<span class="doccomment">/// The unique ID of the function being executed.
+///
+/// For example, in AWS Lambda this field corresponds to the [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) value, in GCP to the URI of the resource, and in Azure to the [FunctionDirectory](https://github.com/Azure/azure-functions-host/wiki/Retrieving-information-about-the-currently-running-function) field.
+///
+/// # Examples
+///
+/// - arn:aws:lambda:us-west-2:123456789012:function:my-function
+</span><span class="kw">pub const </span>FAAS_ID: Key = Key::from_static_str(<span class="string">&quot;faas.id&quot;</span>);
+
+<span class="doccomment">/// The version string of the function being executed as defined in [Version Attributes](../../resource/semantic_conventions/README.md#version-attributes).
+///
+/// # Examples
+///
+/// - 2.0.0
+</span><span class="kw">pub const </span>FAAS_VERSION: Key = Key::from_static_str(<span class="string">&quot;faas.version&quot;</span>);
+
+<span class="doccomment">/// The execution environment ID as a string.
+///
+/// # Examples
+///
+/// - my-function:instance-0001
+</span><span class="kw">pub const </span>FAAS_INSTANCE: Key = Key::from_static_str(<span class="string">&quot;faas.instance&quot;</span>);
+
+<span class="doccomment">/// The amount of memory available to the serverless function in MiB.
+///
+/// It&amp;#39;s recommended to set this attribute since e.g. too little memory can easily stop a Java AWS Lambda function from working correctly. On AWS Lambda, the environment variable `AWS_LAMBDA_FUNCTION_MEMORY_SIZE` provides this information.
+///
+/// # Examples
+///
+/// - 128
+</span><span class="kw">pub const </span>FAAS_MAX_MEMORY: Key = Key::from_static_str(<span class="string">&quot;faas.max_memory&quot;</span>);
+
+<span class="doccomment">/// Unique host ID. For Cloud, this must be the instance_id assigned by the cloud provider.
+///
+/// # Examples
+///
+/// - opentelemetry-test
+</span><span class="kw">pub const </span>HOST_ID: Key = Key::from_static_str(<span class="string">&quot;host.id&quot;</span>);
+
+<span class="doccomment">/// Name of the host. On Unix systems, it may contain what the hostname command returns, or the fully qualified hostname, or another name specified by the user.
+///
+/// # Examples
+///
+/// - opentelemetry-test
+</span><span class="kw">pub const </span>HOST_NAME: Key = Key::from_static_str(<span class="string">&quot;host.name&quot;</span>);
+
+<span class="doccomment">/// Type of host. For Cloud, this must be the machine type.
+///
+/// # Examples
+///
+/// - n1-standard-1
+</span><span class="kw">pub const </span>HOST_TYPE: Key = Key::from_static_str(<span class="string">&quot;host.type&quot;</span>);
+
+<span class="doccomment">/// The CPU architecture the host system is running on.
+</span><span class="kw">pub const </span>HOST_ARCH: Key = Key::from_static_str(<span class="string">&quot;host.arch&quot;</span>);
+
+<span class="doccomment">/// Name of the VM image or OS install the host was instantiated from.
+///
+/// # Examples
+///
+/// - infra-ami-eks-worker-node-7d4ec78312
+/// - CentOS-8-x86_64-1905
+</span><span class="kw">pub const </span>HOST_IMAGE_NAME: Key = Key::from_static_str(<span class="string">&quot;host.image.name&quot;</span>);
+
+<span class="doccomment">/// VM image ID. For Cloud, this value is from the provider.
+///
+/// # Examples
+///
+/// - ami-07b06b442921831e5
+</span><span class="kw">pub const </span>HOST_IMAGE_ID: Key = Key::from_static_str(<span class="string">&quot;host.image.id&quot;</span>);
+
+<span class="doccomment">/// The version string of the VM image as defined in [Version Attributes](README.md#version-attributes).
+///
+/// # Examples
+///
+/// - 0.1
+</span><span class="kw">pub const </span>HOST_IMAGE_VERSION: Key = Key::from_static_str(<span class="string">&quot;host.image.version&quot;</span>);
+
+<span class="doccomment">/// The name of the cluster.
+///
+/// # Examples
+///
+/// - opentelemetry-cluster
+</span><span class="kw">pub const </span>K8S_CLUSTER_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.cluster.name&quot;</span>);
+
+<span class="doccomment">/// The name of the Node.
+///
+/// # Examples
+///
+/// - node-1
+</span><span class="kw">pub const </span>K8S_NODE_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.node.name&quot;</span>);
+
+<span class="doccomment">/// The UID of the Node.
+///
+/// # Examples
+///
+/// - 1eb3a0c6-0477-4080-a9cb-0cb7db65c6a2
+</span><span class="kw">pub const </span>K8S_NODE_UID: Key = Key::from_static_str(<span class="string">&quot;k8s.node.uid&quot;</span>);
+
+<span class="doccomment">/// The name of the namespace that the pod is running in.
+///
+/// # Examples
+///
+/// - default
+</span><span class="kw">pub const </span>K8S_NAMESPACE_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.namespace.name&quot;</span>);
+
+<span class="doccomment">/// The UID of the Pod.
+///
+/// # Examples
+///
+/// - 275ecb36-5aa8-4c2a-9c47-d8bb681b9aff
+</span><span class="kw">pub const </span>K8S_POD_UID: Key = Key::from_static_str(<span class="string">&quot;k8s.pod.uid&quot;</span>);
+
+<span class="doccomment">/// The name of the Pod.
+///
+/// # Examples
+///
+/// - opentelemetry-pod-autoconf
+</span><span class="kw">pub const </span>K8S_POD_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.pod.name&quot;</span>);
+
+<span class="doccomment">/// The name of the Container in a Pod template.
+///
+/// # Examples
+///
+/// - redis
+</span><span class="kw">pub const </span>K8S_CONTAINER_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.container.name&quot;</span>);
+
+<span class="doccomment">/// The UID of the ReplicaSet.
+///
+/// # Examples
+///
+/// - 275ecb36-5aa8-4c2a-9c47-d8bb681b9aff
+</span><span class="kw">pub const </span>K8S_REPLICASET_UID: Key = Key::from_static_str(<span class="string">&quot;k8s.replicaset.uid&quot;</span>);
+
+<span class="doccomment">/// The name of the ReplicaSet.
+///
+/// # Examples
+///
+/// - opentelemetry
+</span><span class="kw">pub const </span>K8S_REPLICASET_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.replicaset.name&quot;</span>);
+
+<span class="doccomment">/// The UID of the Deployment.
+///
+/// # Examples
+///
+/// - 275ecb36-5aa8-4c2a-9c47-d8bb681b9aff
+</span><span class="kw">pub const </span>K8S_DEPLOYMENT_UID: Key = Key::from_static_str(<span class="string">&quot;k8s.deployment.uid&quot;</span>);
+
+<span class="doccomment">/// The name of the Deployment.
+///
+/// # Examples
+///
+/// - opentelemetry
+</span><span class="kw">pub const </span>K8S_DEPLOYMENT_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.deployment.name&quot;</span>);
+
+<span class="doccomment">/// The UID of the StatefulSet.
+///
+/// # Examples
+///
+/// - 275ecb36-5aa8-4c2a-9c47-d8bb681b9aff
+</span><span class="kw">pub const </span>K8S_STATEFULSET_UID: Key = Key::from_static_str(<span class="string">&quot;k8s.statefulset.uid&quot;</span>);
+
+<span class="doccomment">/// The name of the StatefulSet.
+///
+/// # Examples
+///
+/// - opentelemetry
+</span><span class="kw">pub const </span>K8S_STATEFULSET_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.statefulset.name&quot;</span>);
+
+<span class="doccomment">/// The UID of the DaemonSet.
+///
+/// # Examples
+///
+/// - 275ecb36-5aa8-4c2a-9c47-d8bb681b9aff
+</span><span class="kw">pub const </span>K8S_DAEMONSET_UID: Key = Key::from_static_str(<span class="string">&quot;k8s.daemonset.uid&quot;</span>);
+
+<span class="doccomment">/// The name of the DaemonSet.
+///
+/// # Examples
+///
+/// - opentelemetry
+</span><span class="kw">pub const </span>K8S_DAEMONSET_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.daemonset.name&quot;</span>);
+
+<span class="doccomment">/// The UID of the Job.
+///
+/// # Examples
+///
+/// - 275ecb36-5aa8-4c2a-9c47-d8bb681b9aff
+</span><span class="kw">pub const </span>K8S_JOB_UID: Key = Key::from_static_str(<span class="string">&quot;k8s.job.uid&quot;</span>);
+
+<span class="doccomment">/// The name of the Job.
+///
+/// # Examples
+///
+/// - opentelemetry
+</span><span class="kw">pub const </span>K8S_JOB_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.job.name&quot;</span>);
+
+<span class="doccomment">/// The UID of the CronJob.
+///
+/// # Examples
+///
+/// - 275ecb36-5aa8-4c2a-9c47-d8bb681b9aff
+</span><span class="kw">pub const </span>K8S_CRONJOB_UID: Key = Key::from_static_str(<span class="string">&quot;k8s.cronjob.uid&quot;</span>);
+
+<span class="doccomment">/// The name of the CronJob.
+///
+/// # Examples
+///
+/// - opentelemetry
+</span><span class="kw">pub const </span>K8S_CRONJOB_NAME: Key = Key::from_static_str(<span class="string">&quot;k8s.cronjob.name&quot;</span>);
+
+<span class="doccomment">/// The operating system type.
+</span><span class="kw">pub const </span>OS_TYPE: Key = Key::from_static_str(<span class="string">&quot;os.type&quot;</span>);
+
+<span class="doccomment">/// Human readable (not intended to be parsed) OS version information, like e.g. reported by `ver` or `lsb_release -a` commands.
+///
+/// # Examples
+///
+/// - Microsoft Windows [Version 10.0.18363.778]
+/// - Ubuntu 18.04.1 LTS
+</span><span class="kw">pub const </span>OS_DESCRIPTION: Key = Key::from_static_str(<span class="string">&quot;os.description&quot;</span>);
+
+<span class="doccomment">/// Human readable operating system name.
+///
+/// # Examples
+///
+/// - iOS
+/// - Android
+/// - Ubuntu
+</span><span class="kw">pub const </span>OS_NAME: Key = Key::from_static_str(<span class="string">&quot;os.name&quot;</span>);
+
+<span class="doccomment">/// The version string of the operating system as defined in [Version Attributes](../../resource/semantic_conventions/README.md#version-attributes).
+///
+/// # Examples
+///
+/// - 14.2.1
+/// - 18.04.1
+</span><span class="kw">pub const </span>OS_VERSION: Key = Key::from_static_str(<span class="string">&quot;os.version&quot;</span>);
+
+<span class="doccomment">/// Process identifier (PID).
+///
+/// # Examples
+///
+/// - 1234
+</span><span class="kw">pub const </span>PROCESS_PID: Key = Key::from_static_str(<span class="string">&quot;process.pid&quot;</span>);
+
+<span class="doccomment">/// The name of the process executable. On Linux based systems, can be set to the `Name` in `proc/[pid]/status`. On Windows, can be set to the base name of `GetProcessImageFileNameW`.
+///
+/// # Examples
+///
+/// - otelcol
+</span><span class="kw">pub const </span>PROCESS_EXECUTABLE_NAME: Key = Key::from_static_str(<span class="string">&quot;process.executable.name&quot;</span>);
+
+<span class="doccomment">/// The full path to the process executable. On Linux based systems, can be set to the target of `proc/[pid]/exe`. On Windows, can be set to the result of `GetProcessImageFileNameW`.
+///
+/// # Examples
+///
+/// - /usr/bin/cmd/otelcol
+</span><span class="kw">pub const </span>PROCESS_EXECUTABLE_PATH: Key = Key::from_static_str(<span class="string">&quot;process.executable.path&quot;</span>);
+
+<span class="doccomment">/// The command used to launch the process (i.e. the command name). On Linux based systems, can be set to the zeroth string in `proc/[pid]/cmdline`. On Windows, can be set to the first parameter extracted from `GetCommandLineW`.
+///
+/// # Examples
+///
+/// - cmd/otelcol
+</span><span class="kw">pub const </span>PROCESS_COMMAND: Key = Key::from_static_str(<span class="string">&quot;process.command&quot;</span>);
+
+<span class="doccomment">/// The full command used to launch the process as a single string representing the full command. On Windows, can be set to the result of `GetCommandLineW`. Do not set this if you have to assemble it just for monitoring; use `process.command_args` instead.
+///
+/// # Examples
+///
+/// - C:\cmd\otecol --config=&amp;#34;my directory\config.yaml&amp;#34;
+</span><span class="kw">pub const </span>PROCESS_COMMAND_LINE: Key = Key::from_static_str(<span class="string">&quot;process.command_line&quot;</span>);
+
+<span class="doccomment">/// All the command arguments (including the command/executable itself) as received by the process. On Linux-based systems (and some other Unixoid systems supporting procfs), can be set according to the list of null-delimited strings extracted from `proc/[pid]/cmdline`. For libc-based executables, this would be the full argv vector passed to `main`.
+///
+/// # Examples
+///
+/// - cmd/otecol
+/// - --config=config.yaml
+</span><span class="kw">pub const </span>PROCESS_COMMAND_ARGS: Key = Key::from_static_str(<span class="string">&quot;process.command_args&quot;</span>);
+
+<span class="doccomment">/// The username of the user that owns the process.
+///
+/// # Examples
+///
+/// - root
+</span><span class="kw">pub const </span>PROCESS_OWNER: Key = Key::from_static_str(<span class="string">&quot;process.owner&quot;</span>);
+
+<span class="doccomment">/// The name of the runtime of this process. For compiled native binaries, this SHOULD be the name of the compiler.
+///
+/// # Examples
+///
+/// - OpenJDK Runtime Environment
+</span><span class="kw">pub const </span>PROCESS_RUNTIME_NAME: Key = Key::from_static_str(<span class="string">&quot;process.runtime.name&quot;</span>);
+
+<span class="doccomment">/// The version of the runtime of this process, as returned by the runtime without modification.
+///
+/// # Examples
+///
+/// - 14.0.2
+</span><span class="kw">pub const </span>PROCESS_RUNTIME_VERSION: Key = Key::from_static_str(<span class="string">&quot;process.runtime.version&quot;</span>);
+
+<span class="doccomment">/// An additional description about the runtime of the process, for example a specific vendor customization of the runtime environment.
+///
+/// # Examples
+///
+/// - Eclipse OpenJ9 Eclipse OpenJ9 VM openj9-0.21.0
+</span><span class="kw">pub const </span>PROCESS_RUNTIME_DESCRIPTION: Key = Key::from_static_str(<span class="string">&quot;process.runtime.description&quot;</span>);
+
+<span class="doccomment">/// Logical name of the service.
+///
+/// MUST be the same for all instances of horizontally scaled services. If the value was not specified, SDKs MUST fallback to `unknown_service:` concatenated with [`process.executable.name`](process.md#process), e.g. `unknown_service:bash`. If `process.executable.name` is not available, the value MUST be set to `unknown_service`.
+///
+/// # Examples
+///
+/// - shoppingcart
+</span><span class="kw">pub const </span>SERVICE_NAME: Key = Key::from_static_str(<span class="string">&quot;service.name&quot;</span>);
+
+<span class="doccomment">/// A namespace for `service.name`.
+///
+/// A string value having a meaning that helps to distinguish a group of services, for example the team name that owns a group of services. `service.name` is expected to be unique within the same namespace. If `service.namespace` is not specified in the Resource then `service.name` is expected to be unique for all services that have no explicit namespace defined (so the empty/unspecified namespace is simply one more valid namespace). Zero-length namespace string is assumed equal to unspecified namespace.
+///
+/// # Examples
+///
+/// - Shop
+</span><span class="kw">pub const </span>SERVICE_NAMESPACE: Key = Key::from_static_str(<span class="string">&quot;service.namespace&quot;</span>);
+
+<span class="doccomment">/// The string ID of the service instance.
+///
+/// MUST be unique for each instance of the same `service.namespace,service.name` pair (in other words `service.namespace,service.name,service.instance.id` triplet MUST be globally unique). The ID helps to distinguish instances of the same service that exist at the same time (e.g. instances of a horizontally scaled service). It is preferable for the ID to be persistent and stay the same for the lifetime of the service instance, however it is acceptable that the ID is ephemeral and changes during important lifetime events for the service (e.g. service restarts). If the service has no inherent unique ID that can be used as the value of this attribute it is recommended to generate a random Version 1 or Version 4 RFC 4122 UUID (services aiming for reproducible UUIDs may also use Version 5, see RFC 4122 for more recommendations).
+///
+/// # Examples
+///
+/// - 627cc493-f310-47de-96bd-71410b7dec09
+</span><span class="kw">pub const </span>SERVICE_INSTANCE_ID: Key = Key::from_static_str(<span class="string">&quot;service.instance.id&quot;</span>);
+
+<span class="doccomment">/// The version string of the service API or implementation.
+///
+/// # Examples
+///
+/// - 2.0.0
+</span><span class="kw">pub const </span>SERVICE_VERSION: Key = Key::from_static_str(<span class="string">&quot;service.version&quot;</span>);
+
+<span class="doccomment">/// The name of the telemetry SDK as defined above.
+///
+/// # Examples
+///
+/// - opentelemetry
+</span><span class="kw">pub const </span>TELEMETRY_SDK_NAME: Key = Key::from_static_str(<span class="string">&quot;telemetry.sdk.name&quot;</span>);
+
+<span class="doccomment">/// The language of the telemetry SDK.
+</span><span class="kw">pub const </span>TELEMETRY_SDK_LANGUAGE: Key = Key::from_static_str(<span class="string">&quot;telemetry.sdk.language&quot;</span>);
+
+<span class="doccomment">/// The version string of the telemetry SDK.
+///
+/// # Examples
+///
+/// - 1.2.3
+</span><span class="kw">pub const </span>TELEMETRY_SDK_VERSION: Key = Key::from_static_str(<span class="string">&quot;telemetry.sdk.version&quot;</span>);
+
+<span class="doccomment">/// The version string of the auto instrumentation agent, if used.
+///
+/// # Examples
+///
+/// - 1.2.3
+</span><span class="kw">pub const </span>TELEMETRY_AUTO_VERSION: Key = Key::from_static_str(<span class="string">&quot;telemetry.auto.version&quot;</span>);
+
+<span class="doccomment">/// The name of the web engine.
+///
+/// # Examples
+///
+/// - WildFly
+</span><span class="kw">pub const </span>WEBENGINE_NAME: Key = Key::from_static_str(<span class="string">&quot;webengine.name&quot;</span>);
+
+<span class="doccomment">/// The version of the web engine.
+///
+/// # Examples
+///
+/// - 21.0.0
+</span><span class="kw">pub const </span>WEBENGINE_VERSION: Key = Key::from_static_str(<span class="string">&quot;webengine.version&quot;</span>);
+
+<span class="doccomment">/// Additional description of the web engine (e.g. detailed version and edition information).
+///
+/// # Examples
+///
+/// - WildFly Full 21.0.0.Final (WildFly Core 13.0.1.Final) - 2.2.2.Final
+</span><span class="kw">pub const </span>WEBENGINE_DESCRIPTION: Key = Key::from_static_str(<span class="string">&quot;webengine.description&quot;</span>);
+</code></pre></div>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="opentelemetry_semantic_conventions" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (e7119a030 2022-09-22)" ></div></body></html>

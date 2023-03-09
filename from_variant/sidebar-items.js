@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":[["FromVariant","Derives [`From`] for all variants. This only supports an enum where every variant has a single field."]]};

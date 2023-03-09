@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["replace_type","Replaces all types which matches `matcher` with `replacer`."]]};

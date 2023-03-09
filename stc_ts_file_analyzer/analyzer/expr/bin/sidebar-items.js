@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["extract_name_for_assignment",""],["is_str_like_for_addition",""]]};

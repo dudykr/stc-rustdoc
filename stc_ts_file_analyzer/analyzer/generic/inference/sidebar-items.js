@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["should_prevent_generalization",""]],"struct":[["InferTypeOpts","Default"],["InferenceInfo",""],["InferencePriority",""]]};

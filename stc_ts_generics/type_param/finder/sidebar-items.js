@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["TypeParamDeclFinder","This looks for type parameter declarations and infer type parameters."],["TypeParamNameUsageFinder",""],["TypeParamUsageFinder",""]]};

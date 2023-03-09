@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["StringInput","Implementation of [Input]."]],"trait":[["Input",""]],"type":[["SourceFileInput",""]]};

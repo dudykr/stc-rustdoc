@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["apply_string_mapping",""],["left_of_expr",""]],"mod":[["conditional",""],["index_signature",""],["keyof",""],["mapped",""],["narrowing",""],["type_param",""]],"struct":[["NormalizeTypeOpts","All fields defaults to false."]]};

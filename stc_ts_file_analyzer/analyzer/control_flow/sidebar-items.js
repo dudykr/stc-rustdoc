@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["is_expr_correct_binding_pat",""]],"struct":[["CondFacts","Conditional facts"],["Facts",""],["PatAssignOpts",""]],"trait":[["Merge",""]]};

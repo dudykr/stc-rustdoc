@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Iter",""]],"trait":[["IdentifyLast","Copied from https://users.rust-lang.org/t/iterator-need-to-identify-the-last-element/8836/3"]]};

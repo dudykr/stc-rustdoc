@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"static":[["ALLOW_DEEP_CLONE",""]],"trait":[["AssertCloneCheap",""],["Freeze",""]]};

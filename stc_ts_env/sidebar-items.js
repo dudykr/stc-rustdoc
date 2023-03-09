@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["JsxMode",""],["ModuleConfig",""]],"mod":[["marks",""]],"struct":[["BuiltIn",""],["Env","Stuffs which can be changed between runs."],["Marks","The caller should ensure that [swc_common::GLOBALS] and `Marks` is matched."],["Rule",""],["StableEnv","Stuffs which are not changed regardless"]],"trait":[["MarkExt",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":[["fixture","Create tests from files."]]};

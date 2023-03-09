@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["ArgCheckResult",""],["ExtractKind",""],["ReEvalMode","Used for reevaluation."]],"fn":[["is_fn_expr",""]],"struct":[["CallCandidate","TODO(kdy1): Use cow"],["CallOpts",""],["ReturnTypeGeneralizer",""],["ReturnTypeSimplifier","e.g."],["SelectOpts",""]]};

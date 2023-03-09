@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Variance",""]],"fn":[["get_tuple_subtract_count",""]],"mod":[["builtin",""],["cast",""],["class",""],["function",""],["tpl",""],["type_el",""],["unions",""]],"struct":[["AssignData",""],["AssignOpts","Context used for `=` assignments."]]};

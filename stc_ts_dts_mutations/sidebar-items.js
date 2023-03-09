@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["CallableMut",""],["ClassMemberMut",""],["ClassMut",""],["ClassPropMut",""],["ExportDefaultMut",""],["ExprMut",""],["FunctionMut",""],["ModuleItemMut",""],["Mutations","Stores ast mutation information."],["PatMut",""],["VarDeclMut",""]]};

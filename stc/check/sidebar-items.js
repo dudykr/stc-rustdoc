@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["TestCommand","Perform type checking, but this command is not public api and is only used for testing."]]};

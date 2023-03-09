@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":[["MapWithMut","Helper for migration from [Fold] to [VisitMut]"]]};

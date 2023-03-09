@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["should_preserve_ref",""]],"struct":[["KeyInliner","Example"],["LoopBreakerFinder",""],["ReturnValues",""]]};

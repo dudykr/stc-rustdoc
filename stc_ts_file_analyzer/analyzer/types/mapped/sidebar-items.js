@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["IMPL_SPANNED_FOR_PropertyName",""]],"enum":[["PropertyName",""]],"struct":[["IndexedAccessTypeFinder",""],["IndexedAccessTypeReplacer",""]]};

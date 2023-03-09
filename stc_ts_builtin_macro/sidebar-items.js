@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["name_for",""],["q",""]],"macro":[["builtin",""]]};

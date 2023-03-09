@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["deps_of",""],["ids_declared_by",""],["ids_declared_by_decl",""],["left",""],["left_of_expr",""],["vars_declared_by_var_decl",""]],"struct":[["DepAnalyzer",""],["TypedId",""]]};

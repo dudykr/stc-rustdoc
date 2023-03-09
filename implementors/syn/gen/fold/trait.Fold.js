@@ -1,0 +1,4 @@
+(function() {var implementors = {
+"rnode_macros":[["impl <a class=\"trait\" href=\"syn/gen/fold/trait.Fold.html\" title=\"trait syn::gen::fold::Fold\">Fold</a> for <a class=\"struct\" href=\"rnode_macros/struct.OptionReplacer.html\" title=\"struct rnode_macros::OptionReplacer\">OptionReplacer</a>&lt;'_&gt;"]],
+"stc_ts_file_analyzer_macros":[["impl <a class=\"trait\" href=\"syn/gen/fold/trait.Fold.html\" title=\"trait syn::gen::fold::Fold\">Fold</a> for <a class=\"struct\" href=\"stc_ts_file_analyzer_macros/struct.LifetimeReplacer.html\" title=\"struct stc_ts_file_analyzer_macros::LifetimeReplacer\">LifetimeReplacer</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

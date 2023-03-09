@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Data",""],["ModuleId",""],["ModuleIdGenerator","Each module has a unique id and [Mark] for top-level items"]]};

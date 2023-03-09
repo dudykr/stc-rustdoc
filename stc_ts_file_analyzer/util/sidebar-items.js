@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["contains_infer_type","Check if `ty` stores infer type in it."],["is_str_or_union",""],["should_instantiate_type_ann",""],["unwrap_builtin_with_single_arg",""]],"mod":[["dashmap",""],["graph",""],["type_ext",""]],"trait":[["EndsWithRet",""],["ModuleItemOrStmt",""],["RemoveTypes","TODO(kdy1): Change it to return Box"]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["loader",""],["typings",""]],"struct":[["Checker","Onc instance per swc::Compiler"]]};

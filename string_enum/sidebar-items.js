@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":[["StringEnum","Creates `.as_str()` and then implements `Debug` and `Display` using it."]]};

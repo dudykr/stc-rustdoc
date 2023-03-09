@@ -1,0 +1,5 @@
+(function() {var implementors = {
+"clap":[],
+"stc":[["impl <a class=\"trait\" href=\"clap/derive/trait.FromArgMatches.html\" title=\"trait clap::derive::FromArgMatches\">FromArgMatches</a> for <a class=\"struct\" href=\"stc/check/struct.TestCommand.html\" title=\"struct stc::check::TestCommand\">TestCommand</a>"],["impl <a class=\"trait\" href=\"clap/derive/trait.FromArgMatches.html\" title=\"trait clap::derive::FromArgMatches\">FromArgMatches</a> for <a class=\"enum\" href=\"stc/enum.Command.html\" title=\"enum stc::Command\">Command</a>"]],
+"stc_ts_lang_server":[["impl <a class=\"trait\" href=\"clap/derive/trait.FromArgMatches.html\" title=\"trait clap::derive::FromArgMatches\">FromArgMatches</a> for <a class=\"struct\" href=\"stc_ts_lang_server/struct.LspCommand.html\" title=\"struct stc_ts_lang_server::LspCommand\">LspCommand</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

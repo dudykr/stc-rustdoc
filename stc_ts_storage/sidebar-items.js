@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Builtin",""],["File",""],["Group",""],["Info",""],["Single",""]],"trait":[["ErrorStore",""],["Mode","Metadata for the input provided to the analyzer."],["TypeStore",""]],"type":[["Storage",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["PluginCorePkgDiagnostics","A serializable, wrapped struct for the diagnostics information included in plugin binaries. TODO: Must implement bytecheck with forward-compatible schema changes to prevent handshake failure."]]};

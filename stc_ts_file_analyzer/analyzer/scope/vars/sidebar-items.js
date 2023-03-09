@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["VarKind","The kind of binding."]],"fn":[["add_destructure_sign",""],["remove_readonly",""]],"struct":[["DeclareVarsOpts","All bool fields default to `false`."]]};

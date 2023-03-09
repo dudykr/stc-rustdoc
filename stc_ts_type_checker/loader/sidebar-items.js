@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["analyzer",""],["store",""]],"struct":[["DefaultFileLoader",""],["ModuleLoader","A simple implementation of [LoadModule]."],["ModuleRecord",""],["Records",""]],"trait":[["LoadFile","NOTE: [FileName::Custom] is not passed to this type."],["LoadModule","A module loader."]]};

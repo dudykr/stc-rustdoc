@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":[["EqIgnoreSpan","Derives `swc_common::EqIgnoreSpan`."],["TypeEq","Derives `swc_common::TypeEq`."]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["calc_eval_order","Returns"]],"mod":[["calc",""],["class",""],["object",""],["stmt","Dependency analyzer for statements."],["types",""]]};

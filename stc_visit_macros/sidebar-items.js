@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":[["Visit","Note: This generates `FoldWith`, `VisitWith` and `VisitMutWith` although it’s `#[derive(Visit)]`"]],"fn":[["make_arm",""],["make_body",""],["make_item",""],["make_visit_expr",""]],"struct":[["Set",""]]};

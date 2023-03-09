@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["IMPL_SPANNED_FOR_Error",""],["IMPL_SPANNED_FOR_ErrorKind",""]],"enum":[["ErrorKind",""]],"mod":[["debug","A module to validate while type checking"],["result_ext",""]],"struct":[["Error","[ErrorKind] with debug contexts attached."],["Errors","A utility type to track"]],"trait":[["DebugExt",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["resolver","See [Ident] for know how does swc manages identifiers."]],"macro":[["enable_helper",""]],"mod":[["assumptions",""],["feature",""],["fixer",""],["helpers",""],["hygiene",""],["pass",""],["perf",""],["quote",""],["rename",""],["scope",""]]};

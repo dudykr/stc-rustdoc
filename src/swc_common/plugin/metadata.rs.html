@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/swc_common-0.29.31/src/plugin/metadata.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>metadata.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../swc_common/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../swc_common/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../swc_common/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+</pre><pre class="rust"><code><span class="kw">use </span>std::env;
+
+<span class="kw">use </span><span class="kw">crate</span>::collections::AHashMap;
+
+<span class="doccomment">/// Indexable key to the metadata context for a transform plugin, avoiding
+/// serialization &amp; allocation to the host by using incremental number.
+/// TransformPluginMetadataContext does not implement Index trait, instead
+/// host does manual matching to corresponding value.
+</span><span class="attribute">#[derive(Copy, Clone)]
+</span><span class="kw">pub enum </span>TransformPluginMetadataContextKind {
+    <span class="comment">// This value always should increase, even if some keys are removed in the
+    // future.
+    </span>Filename = <span class="number">1</span>,
+    Env = <span class="number">2</span>,
+    Cwd = <span class="number">3</span>,
+}
+
+<span class="kw">impl </span>From&lt;u32&gt; <span class="kw">for </span>TransformPluginMetadataContextKind {
+    <span class="kw">fn </span>from(key: u32) -&gt; TransformPluginMetadataContextKind {
+        <span class="kw">match </span>key {
+            <span class="number">1 </span>=&gt; TransformPluginMetadataContextKind::Filename,
+            <span class="number">2 </span>=&gt; TransformPluginMetadataContextKind::Env,
+            <span class="number">3 </span>=&gt; TransformPluginMetadataContextKind::Cwd,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;Invalid TransformPluginMetadataContextKind key&quot;</span>),
+        }
+    }
+}
+
+<span class="comment">/*
+impl TransformPluginMetadataContextKind {
+    pub fn from(key: u32) -&gt; TransformPluginMetadataContextKind {
+        match key {
+            1 =&gt; TransformPluginMetadataContextKind::Filename,
+            2 =&gt; TransformPluginMetadataContextKind::Env,
+            3 =&gt; TransformPluginMetadataContextKind::Cwd,
+            _ =&gt; panic!(&quot;Invalid TransformPluginMetadataContextKind key&quot;),
+        }
+    }
+}
+
+impl Into&lt;u32&gt; for TransformPluginMetadataContextKind {
+    fn into(self) -&gt; u32 {
+        match self {
+            TransformPluginMetadataContextKind::Filename =&gt; 1,
+            TransformPluginMetadataContextKind::Env =&gt; 2,
+            TransformPluginMetadataContextKind::Cwd =&gt; 3,
+        }
+    }
+}*/
+
+</span><span class="doccomment">/// Host side metadata context plugin may need to access.
+/// This is a global context - any plugin in single transform will have same
+/// values.
+</span><span class="kw">pub struct </span>TransformPluginMetadataContext {
+    <span class="doccomment">/// The path of the file being processed. This includes all of the path as
+    /// much as possible.
+    </span><span class="kw">pub </span>filename: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// The current environment resolved as process.env.SWC_ENV ||
+    /// process.env.NODE_ENV || &quot;development&quot;
+    </span><span class="kw">pub </span>env: String,
+    <span class="doccomment">/// The current working directory.
+    </span><span class="kw">pub </span>cwd: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="kw">pub </span>experimental: AHashMap&lt;String, String&gt;,
+}
+
+<span class="kw">impl </span>TransformPluginMetadataContext {
+    <span class="kw">pub fn </span>new(
+        filename: <span class="prelude-ty">Option</span>&lt;String&gt;,
+        env: String,
+        experimental: <span class="prelude-ty">Option</span>&lt;AHashMap&lt;String, String&gt;&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        TransformPluginMetadataContext {
+            filename,
+            env,
+            cwd: env::current_dir()
+                .map(|cwd| cwd.as_path().to_string_lossy().to_string())
+                .ok(),
+            experimental: experimental.unwrap_or_default(),
+        }
+    }
+
+    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>TransformPluginMetadataContextKind) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="kw">match </span>key {
+            TransformPluginMetadataContextKind::Filename =&gt; <span class="self">self</span>.filename.clone(),
+            TransformPluginMetadataContextKind::Env =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.env.clone()),
+            TransformPluginMetadataContextKind::Cwd =&gt; <span class="self">self</span>.cwd.clone(),
+        }
+    }
+}
+</code></pre></div>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="swc_common" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (e7119a030 2022-09-22)" ></div></body></html>

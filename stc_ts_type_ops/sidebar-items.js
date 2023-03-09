@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["is_str_lit_or_union",""]],"mod":[["expansion",""],["generalization",""],["metadata",""],["this",""],["tuple_normalization",""],["tuple_to_array",""],["union_finder",""],["union_normalization",""],["widen",""]],"struct":[["PreventComplexSimplification",""]],"trait":[["Fix",""]]};

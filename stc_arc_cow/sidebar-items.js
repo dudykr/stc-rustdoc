@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["ArcCow",""]],"mod":[["freeze",""],["private",""]],"struct":[["Freezed",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["BindedField","Binded field. Note that this struct acts like a binded variable for `quote!`."],["Binder","Used to bind whole struct or enum."],["VariantBinder","Variant."]]};

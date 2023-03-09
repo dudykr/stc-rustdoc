@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["ExtendsOpts","All fields default to false."]]};

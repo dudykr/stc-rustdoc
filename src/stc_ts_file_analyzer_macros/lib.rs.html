@@ -1,0 +1,406 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/stc_ts_file_analyzer_macros/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../stc_ts_file_analyzer_macros/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../stc_ts_file_analyzer_macros/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../stc_ts_file_analyzer_macros/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+</pre><pre class="rust"><code><span class="attribute">#![feature(box_patterns)]
+#![deny(unused_variables)]
+#![recursion_limit = <span class="string">&quot;4096&quot;</span>]
+
+#[macro_use]
+</span><span class="kw">extern crate </span>pmutil;
+<span class="kw">extern crate </span>proc_macro;
+
+<span class="kw">use </span>pmutil::{Quote, ToTokensExt};
+<span class="kw">use </span>swc_macros_common::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>syn::{fold::Fold, ExprTryBlock, FnArg, Ident, ImplItem, ImplItemMethod, ItemImpl, Lifetime, ReturnType, Token, Type, TypeReference};
+
+<span class="doccomment">/// This macro converts
+///
+/// ```ignore
+/// impl Foo {
+///     #[extra_validator]
+///     fn validate_foo(&amp;mut self, arg: Arg1) -&gt; Result&lt;Ret, ()&gt; {
+///         // body
+///         Err(err)?;
+///     }
+/// }
+/// ```
+///
+/// to
+///
+///
+/// ```ignore
+/// impl Foo {
+///     fn validate_foo(&amp;mut self, arg: Arg1) -&gt; Result&lt;Ret, ()&gt; {
+///         let res: Result&lt;Ret, Error&gt; = try {
+///             // body
+///             Err(err)?
+///         };
+///
+///         match res {
+///             Ok(v) =&gt; Ok(v),
+///             Err(err) =&gt; {
+///                 self.info.errors.push(err);
+///                 Err(())
+///             }
+///         }
+///     }
+/// }
+/// ```
+</span><span class="attribute">#[proc_macro_attribute]
+</span><span class="kw">pub fn </span>extra_validator(<span class="kw">_</span>: proc_macro::TokenStream, item: proc_macro::TokenStream) -&gt; proc_macro::TokenStream {
+    <span class="kw">fn </span>expand_extra_validator(i: ImplItemMethod) -&gt; ImplItemMethod {
+        <span class="kw">let </span>should_return = !<span class="macro">matches!</span>(i.sig.output, ReturnType::Default);
+
+        <span class="kw">let </span>try_block = ExprTryBlock {
+            attrs: Default::default(),
+            try_token: call_site(),
+            block: i.block,
+        };
+
+        <span class="kw">let </span>block = <span class="kw">if </span>should_return {
+            Quote::new_call_site()
+                .quote_with(<span class="macro">smart_quote!</span>(Vars { try_block: <span class="kw-2">&amp;</span>try_block }, {
+                    {
+                        <span class="kw">let </span>res: <span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, stc_ts_errors::Error&gt; = try_block;
+
+                        <span class="kw">match </span>res {
+                            <span class="prelude-val">Ok</span>(v) =&gt; <span class="prelude-val">Ok</span>(v),
+                            <span class="prelude-val">Err</span>(err) =&gt; {
+                                <span class="self">self</span>.storage.report(err);
+                                <span class="prelude-val">Err</span>(())
+                            }
+                        }
+                    }
+                }))
+                .parse()
+        } <span class="kw">else </span>{
+            Quote::new_call_site()
+                .quote_with(<span class="macro">smart_quote!</span>(Vars { try_block: <span class="kw-2">&amp;</span>try_block }, {
+                    {
+                        <span class="kw">let </span>res: <span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, stc_ts_errors::Error&gt; = try_block;
+
+                        <span class="kw">match </span>res {
+                            <span class="prelude-val">Err</span>(err) =&gt; {
+                                <span class="self">self</span>.storage.report(err);
+                            }
+                            <span class="kw">_ </span>=&gt; {}
+                        }
+                    }
+                }))
+                .parse()
+        };
+
+        ImplItemMethod { block, ..i }
+    }
+
+    <span class="kw">let </span>item = syn::parse(item).expect(<span class="string">&quot;failed to parse input as an item&quot;</span>);
+    <span class="kw">let </span>item = expand_extra_validator(item);
+    print(<span class="string">&quot;extra_validator&quot;</span>, item.dump())
+}
+
+<span class="doccomment">/// This trait implements Validate with proper types.
+</span><span class="attribute">#[proc_macro_attribute]
+</span><span class="kw">pub fn </span>validator(<span class="kw">_</span>: proc_macro::TokenStream, item: proc_macro::TokenStream) -&gt; proc_macro::TokenStream {
+    <span class="kw">let </span>impl_item: ItemImpl = syn::parse(item).expect(<span class="string">&quot;failed to parse input as an ItemImpl&quot;</span>);
+    <span class="kw">let </span>visitor_type = <span class="kw-2">&amp;*</span>impl_item.self_ty;
+
+    <span class="kw">let </span><span class="kw-2">mut </span>tokens = <span class="macro">q!</span>({});
+    <span class="kw">for </span>mtd <span class="kw">in </span><span class="kw-2">&amp;</span>impl_item.items {
+        <span class="kw">let </span>mtd = <span class="kw">match </span>mtd {
+            ImplItem::Method(m) =&gt; m,
+            <span class="kw">_ </span>=&gt; <span class="macro">unimplemented!</span>(<span class="string">&quot;items other than method is not supported yet&quot;</span>),
+        };
+        <span class="kw">let </span>sig = <span class="kw-2">&amp;</span>mtd.sig;
+        <span class="macro">assert_eq!</span>(sig.ident, <span class="string">&quot;validate&quot;</span>, <span class="string">&quot;#[validator] wants the name of method `validate`&quot;</span>);
+
+        <span class="comment">// We want to implement Validate&lt;&#39;context, T&gt; for Analyzer, so we need to find
+        // `T`.
+        </span><span class="kw">let </span><span class="kw-2">mut </span>node_pat = <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>node_type = <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>context_types = Punctuated::&lt;<span class="kw">_</span>, <span class="macro">Token!</span>[,]&gt;::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>context_pats = Punctuated::&lt;<span class="kw">_</span>, <span class="macro">Token!</span>[,]&gt;::default();
+        <span class="kw">for </span>input <span class="kw">in </span>sig.inputs.pairs().skip(<span class="number">1</span>) {
+            <span class="kw">match </span>input.value() {
+                FnArg::Receiver(<span class="kw">_</span>) =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Expected type, not receiver&quot;</span>),
+                FnArg::Typed(pat_ty) =&gt; {
+                    <span class="kw">let </span>ty = <span class="kw-2">&amp;*</span>pat_ty.ty;
+
+                    <span class="comment">// Find `T`
+                    </span><span class="kw">if </span>node_type.is_none() {
+                        <span class="kw">match </span>ty {
+                            Type::Reference(ty) <span class="kw">if </span>ty.mutability.is_none() =&gt; {
+                                node_type = <span class="prelude-val">Some</span>(ty.elem.clone());
+                            }
+                            <span class="kw">_ </span>=&gt; <span class="macro">unimplemented!</span>(<span class="string">&quot;first argument should be self and second argument must be `&amp;T`&quot;</span>),
+                        }
+                        node_pat = <span class="prelude-val">Some</span>(pat_ty.pat.clone());
+                        <span class="kw">continue</span>;
+                    }
+
+                    <span class="comment">// Now we look for extra context args
+                    // TODO(kdy1): Fix span
+                    </span>{
+                        <span class="kw">let </span><span class="kw-2">mut </span>ty = ty.clone();
+                        ty = LifetimeReplacer.fold_type(ty);
+
+                        context_types.push(ty);
+                        context_pats.push(pat_ty.pat.clone());
+                    }
+                }
+            }
+        }
+
+        <span class="kw">let </span>ret_ty = <span class="kw-2">&amp;</span>mtd.sig.output;
+        <span class="kw">let </span>default_ty;
+        <span class="kw">let </span>ret_ty = <span class="kw">match </span>ret_ty {
+            ReturnType::Type(<span class="kw">_</span>, ty) =&gt; <span class="kw-2">&amp;**</span>ty,
+            ReturnType::Default =&gt; {
+                default_ty = <span class="macro">q!</span>((<span class="kw">crate</span>::VResult&lt;()&gt;)).parse();
+                <span class="kw-2">&amp;</span>default_ty
+            }
+        };
+
+        <span class="kw">let </span><span class="kw-2">mut </span>item = <span class="macro">q!</span>(
+            Vars {
+                VisitorType: visitor_type,
+                NodeType: <span class="kw-2">&amp;</span>node_type,
+                ReturnType: <span class="kw-2">&amp;</span>ret_ty,
+                ContextType: <span class="kw-2">&amp;</span>context_types,
+                body: <span class="kw-2">&amp;</span>mtd.block,
+                node_pat: <span class="kw-2">&amp;</span>node_pat.unwrap(),
+                context_pats: <span class="kw-2">&amp;</span>context_pats,
+            },
+            {
+                <span class="kw">impl</span>&lt;<span class="lifetime">&#39;context</span>&gt; <span class="kw">crate</span>::validator::Validate&lt;<span class="lifetime">&#39;context</span>, NodeType&gt; <span class="kw">for </span>VisitorType {
+                    <span class="kw">type </span>Context = (ContextType);
+                    <span class="kw">type </span>Output = ReturnType;
+
+                    <span class="kw">fn </span>validate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node_pat: <span class="kw-2">&amp;</span>NodeType, ctxt: <span class="self">Self</span>::Context) -&gt; <span class="self">Self</span>::Output {
+                        <span class="kw">let </span>(context_pats) = ctxt;
+
+                        body
+                    }
+                }
+            }
+        )
+        .parse::&lt;ItemImpl&gt;();
+        item.attrs.extend(impl_item.attrs.clone());
+
+        tokens.push_tokens(<span class="kw-2">&amp;</span>item)
+    }
+
+    print(<span class="string">&quot;validator&quot;</span>, tokens.dump())
+}
+
+<span class="kw">struct </span>LifetimeReplacer;
+
+<span class="kw">impl </span>Fold <span class="kw">for </span>LifetimeReplacer {
+    <span class="kw">fn </span>fold_type_reference(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>i: TypeReference) -&gt; TypeReference {
+        i.lifetime = <span class="prelude-val">Some</span>(Lifetime {
+            apostrophe: call_site(),
+            ident: Ident::new(<span class="string">&quot;context&quot;</span>, call_site()),
+        });
+        i
+    }
+}
+</code></pre></div>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="stc_ts_file_analyzer_macros" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (e7119a030 2022-09-22)" ></div></body></html>

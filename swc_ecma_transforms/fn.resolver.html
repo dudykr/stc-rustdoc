@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="See [Ident] for know how does swc manages identifiers."><meta name="keywords" content="rust, rustlang, rust-lang, resolver"><title>resolver in swc_ecma_transforms - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../normalize.css"><link rel="stylesheet" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../ayu.css" disabled><link rel="stylesheet" href="../dark.css" disabled><link rel="stylesheet" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../swc_ecma_transforms/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../swc_ecma_transforms/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div></a><div class="sidebar-elems"><h2 class="location"><a href="index.html">In swc_ecma_transforms</a></h2></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../swc_ecma_transforms/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="main-heading"><h1 class="fqn"><span class="in-band">Function <a href="index.html">swc_ecma_transforms</a>::<wbr><a class="fn" href="#">resolver</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/swc_ecma_transforms_base/resolver/mod.rs.html#133-137">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="item-decl"><pre class="rust fn"><code>pub fn resolver(<br>&nbsp;&nbsp;&nbsp;&nbsp;unresolved_mark: <a class="struct" href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="struct swc_common::syntax_pos::hygiene::Mark">Mark</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;top_level_mark: <a class="struct" href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="struct swc_common::syntax_pos::hygiene::Mark">Mark</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;typescript: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><br>) -&gt; impl <a class="trait" href="../swc_ecma_visit/trait.Fold.html" title="trait swc_ecma_visit::Fold">Fold</a> + <a class="trait" href="../swc_ecma_visit/trait.VisitMut.html" title="trait swc_ecma_visit::VisitMut">VisitMut</a> + 'static</code></pre></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>See <a href="../swc_ecma_ast/ident/struct.Ident.html" title="Ident">Ident</a> for know how does swc manages identifiers.</p>
+<h2 id="when-to-run"><a href="#when-to-run">When to run</a></h2>
+<p>The resolver expects ‘clean’ ast. You can get clean ast by parsing, or by
+removing all syntax context in ast nodes.</p>
+<h2 id="what-does-it-do"><a href="#what-does-it-do">What does it do</a></h2>
+<p>Firstly all scopes (fn, block) has it’s own SyntaxContext.
+Resolver visits all identifiers in module, and look for binding identifies
+in the scope. Those identifiers now have the SyntaxContext of scope (fn,
+block). While doing so, resolver tries to resolve normal identifiers (no
+hygiene info) as a reference to identifier of scope. If the resolver find
+suitable variable, the identifier reference will have same context as the
+variable.</p>
+<h2 id="panics"><a href="#panics">Panics</a></h2>
+<p><code>top_level_mark</code> should not be root.</p>
+<h2 id="example"><a href="#example">Example</a></h2><div class="example-wrap"><pre class="language-js"><code>let a = 1;
+{
+    let a = 2;
+    use(a);
+}
+use(a)</code></pre></div>
+<p>resolver does</p>
+<ol>
+<li>
+<p>Define <code>a</code> with top level context.</p>
+</li>
+<li>
+<p>Found a block, so visit block with a new syntax context.</p>
+</li>
+<li>
+<p>Defined <code>a</code> with syntax context of the block statement.</p>
+</li>
+<li>
+<p>Found usage of <code>a</code>, and determines that it’s reference to <code>a</code> in the
+block. So the reference to <code>a</code> will have same syntax context as <code>a</code> in the
+block.</p>
+</li>
+<li>
+<p>Found usage of <code>a</code> (last line), and determines that it’s a
+reference to top-level <code>a</code>, and change syntax context of <code>a</code> on last line to
+top-level syntax context.</p>
+</li>
+</ol>
+<h2 id="parameters"><a href="#parameters">Parameters</a></h2><h3 id="unresolved_mark"><a href="#unresolved_mark"><code>unresolved_mark</code></a></h3>
+<p><a href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="Mark">Mark</a> applied to unresolved references.</p>
+<p>A pass should accept this <a href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="Mark">Mark</a> if it’s going to generate a refernce to
+globals like <code>require</code>.</p>
+<p>e.g. <code>common_js</code> pass generates calls to <code>require</code>, and this should not
+be shadowed by a declaration named <code>require</code> in the same file.
+So it uses this value.</p>
+<h3 id="top_level_mark"><a href="#top_level_mark"><code>top_level_mark</code></a></h3>
+<p><a href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="Mark">Mark</a> applied to top-level bindings.</p>
+<p><strong>NOTE</strong>: This is <strong>not</strong> globals. This is for top level items declared by
+users.</p>
+<p>A pass should accept this <a href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="Mark">Mark</a> if it requires user-defined top-level
+items.</p>
+<p>e.g. <code>jsx</code> pass requires to call <code>React</code> imported by the user.</p>
+<div class="example-wrap"><pre class="language-js"><code>import React from &#39;react&#39;;</code></pre></div>
+<p>In the code above, <code>React</code> has this <a href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="Mark">Mark</a>. <code>jsx</code> passes need to
+reference this <a href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="Mark">Mark</a>, so it accpets this.</p>
+<p>This <a href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="Mark">Mark</a> should be used for referencing top-level bindings written by
+user. If you are going to create a binding, use <code>private_ident</code>
+instead.</p>
+<p>In other words, <strong>this <a href="../swc_common/syntax_pos/hygiene/struct.Mark.html" title="Mark">Mark</a> should not be used for determining if a
+variable is top-level.</strong> This is simply a configuration of the <code>resolver</code>
+pass.</p>
+<h3 id="typescript"><a href="#typescript"><code>typescript</code></a></h3>
+<p>Enable this only if you are going to strip types or apply type-aware
+passes like decorators pass.</p>
+<h2 id="faq"><a href="#faq">FAQ</a></h2><h3 id="does-a-pair-jsword-syntaxcontext-always-uniquely-identifiers-a"><a href="#does-a-pair-jsword-syntaxcontext-always-uniquely-identifiers-a">Does a pair <code>(JsWord, SyntaxContext)</code> always uniquely identifiers a</a></h3>
+<p>variable binding?</p>
+<p>Yes, but multiple variables can have the exactly same name.</p>
+<p>In the code below,</p>
+<div class="example-wrap"><pre class="language-js"><code>var a = 1, a = 2;</code></pre></div>
+<p>both of them have the same name, so the <code>(JsWord, SyntaxContext)</code> pair will
+be also identical.</p>
+</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="swc_ecma_transforms" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (e7119a030 2022-09-22)" ></div></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["fold_helper","Handles folding of Arc and Static"],["visit_helper","Handles visiting of Arc and Static"]]};

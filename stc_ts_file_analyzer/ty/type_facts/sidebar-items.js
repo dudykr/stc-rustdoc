@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["facts_to_union",""]],"struct":[["TypeFactsHandler",""]]};

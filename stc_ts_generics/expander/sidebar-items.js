@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"static":[["GENERIC_CACHE",""]],"struct":[["GenericChecker","This [Visit] implementation is used to check if one of the type parameters are used."],["GenericExpander","This struct does not expands ref to other type. See Analyzer.expand to do such operation."],["InferTypeResult",""],["MappedHandler",""]]};

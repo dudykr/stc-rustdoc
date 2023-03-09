@@ -1,0 +1,1706 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/miette-4.7.1/src/handlers/graphical.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>graphical.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../miette/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../miette/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../miette/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+<span id="698">698</span>
+<span id="699">699</span>
+<span id="700">700</span>
+<span id="701">701</span>
+<span id="702">702</span>
+<span id="703">703</span>
+<span id="704">704</span>
+<span id="705">705</span>
+<span id="706">706</span>
+<span id="707">707</span>
+<span id="708">708</span>
+<span id="709">709</span>
+<span id="710">710</span>
+<span id="711">711</span>
+<span id="712">712</span>
+<span id="713">713</span>
+<span id="714">714</span>
+<span id="715">715</span>
+<span id="716">716</span>
+<span id="717">717</span>
+<span id="718">718</span>
+<span id="719">719</span>
+<span id="720">720</span>
+<span id="721">721</span>
+<span id="722">722</span>
+<span id="723">723</span>
+<span id="724">724</span>
+<span id="725">725</span>
+<span id="726">726</span>
+<span id="727">727</span>
+<span id="728">728</span>
+<span id="729">729</span>
+<span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+</pre><pre class="rust"><code><span class="kw">use </span>std::fmt::{<span class="self">self</span>, Write};
+
+<span class="kw">use </span>owo_colors::{OwoColorize, Style};
+
+<span class="kw">use </span><span class="kw">crate</span>::diagnostic_chain::DiagnosticChain;
+<span class="kw">use </span><span class="kw">crate</span>::handlers::theme::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::protocol::{Diagnostic, Severity};
+<span class="kw">use crate</span>::{LabeledSpan, MietteError, ReportHandler, SourceCode, SourceSpan, SpanContents};
+
+<span class="doccomment">/**
+A [`ReportHandler`] that displays a given [`Report`](crate::Report) in a
+quasi-graphical way, using terminal colors, unicode drawing characters, and
+other such things.
+
+This is the default reporter bundled with `miette`.
+
+This printer can be customized by using [`new_themed()`](GraphicalReportHandler::new_themed) and handing it a
+[`GraphicalTheme`] of your own creation (or using one of its own defaults!)
+
+See [`set_hook()`](crate::set_hook) for more details on customizing your global
+printer.
+*/
+</span><span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>GraphicalReportHandler {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) links: LinkStyle,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) termwidth: usize,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) theme: GraphicalTheme,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) footer: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) context_lines: usize,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) tab_width: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+}
+
+<span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>LinkStyle {
+    <span class="prelude-val">None</span>,
+    Link,
+    Text,
+}
+
+<span class="kw">impl </span>GraphicalReportHandler {
+    <span class="doccomment">/// Create a new `GraphicalReportHandler` with the default
+    /// [`GraphicalTheme`]. This will use both unicode characters and colors.
+    </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            links: LinkStyle::Link,
+            termwidth: <span class="number">200</span>,
+            theme: GraphicalTheme::default(),
+            footer: <span class="prelude-val">None</span>,
+            context_lines: <span class="number">1</span>,
+            tab_width: <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="doccomment">///Create a new `GraphicalReportHandler` with a given [`GraphicalTheme`].
+    </span><span class="kw">pub fn </span>new_themed(theme: GraphicalTheme) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            links: LinkStyle::Link,
+            termwidth: <span class="number">200</span>,
+            theme,
+            footer: <span class="prelude-val">None</span>,
+            context_lines: <span class="number">1</span>,
+            tab_width: <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="doccomment">/// Set the displayed tab width in spaces.
+    </span><span class="kw">pub fn </span>tab_width(<span class="kw-2">mut </span><span class="self">self</span>, width: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.tab_width = <span class="prelude-val">Some</span>(width);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Whether to enable error code linkification using [`Diagnostic::url()`].
+    </span><span class="kw">pub fn </span>with_links(<span class="kw-2">mut </span><span class="self">self</span>, links: bool) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.links = <span class="kw">if </span>links {
+            LinkStyle::Link
+        } <span class="kw">else </span>{
+            LinkStyle::Text
+        };
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Whether to include [`Diagnostic::url()`] in the output.
+    ///
+    /// Disabling this is not recommended, but can be useful for more easily
+    /// reproducable tests, as `url(docsrs)` links are version-dependent.
+    </span><span class="kw">pub fn </span>with_urls(<span class="kw-2">mut </span><span class="self">self</span>, urls: bool) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.links = <span class="kw">match </span>(<span class="self">self</span>.links, urls) {
+            (<span class="kw">_</span>, <span class="bool-val">false</span>) =&gt; LinkStyle::None,
+            (LinkStyle::None, <span class="bool-val">true</span>) =&gt; LinkStyle::Link,
+            (links, <span class="bool-val">true</span>) =&gt; links,
+        };
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Set a theme for this handler.
+    </span><span class="kw">pub fn </span>with_theme(<span class="kw-2">mut </span><span class="self">self</span>, theme: GraphicalTheme) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.theme = theme;
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets the width to wrap the report at.
+    </span><span class="kw">pub fn </span>with_width(<span class="kw-2">mut </span><span class="self">self</span>, width: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.termwidth = width;
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets the &#39;global&#39; footer for this handler.
+    </span><span class="kw">pub fn </span>with_footer(<span class="kw-2">mut </span><span class="self">self</span>, footer: String) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.footer = <span class="prelude-val">Some</span>(footer);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets the number of lines of context to show around each error.
+    </span><span class="kw">pub fn </span>with_context_lines(<span class="kw-2">mut </span><span class="self">self</span>, lines: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.context_lines = lines;
+        <span class="self">self
+    </span>}
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>GraphicalReportHandler {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new()
+    }
+}
+
+<span class="kw">impl </span>GraphicalReportHandler {
+    <span class="doccomment">/// Render a [`Diagnostic`]. This function is mostly internal and meant to
+    /// be called by the toplevel [`ReportHandler`] handler, but is made public
+    /// to make it easier (possible) to test in isolation from global state.
+    </span><span class="kw">pub fn </span>render_report(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write,
+        diagnostic: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Diagnostic),
+    ) -&gt; fmt::Result {
+        <span class="self">self</span>.render_header(f, diagnostic)<span class="question-mark">?</span>;
+        <span class="macro">writeln!</span>(f)<span class="question-mark">?</span>;
+        <span class="self">self</span>.render_causes(f, diagnostic)<span class="question-mark">?</span>;
+        <span class="kw">let </span>src = diagnostic.source_code();
+        <span class="self">self</span>.render_snippets(f, diagnostic, src)<span class="question-mark">?</span>;
+        <span class="self">self</span>.render_footer(f, diagnostic)<span class="question-mark">?</span>;
+        <span class="self">self</span>.render_related(f, diagnostic, src)<span class="question-mark">?</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(footer) = <span class="kw-2">&amp;</span><span class="self">self</span>.footer {
+            <span class="macro">writeln!</span>(f)<span class="question-mark">?</span>;
+            <span class="kw">let </span>width = <span class="self">self</span>.termwidth.saturating_sub(<span class="number">4</span>);
+            <span class="kw">let </span>opts = textwrap::Options::new(width)
+                .initial_indent(<span class="string">&quot;  &quot;</span>)
+                .subsequent_indent(<span class="string">&quot;  &quot;</span>);
+            <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, textwrap::fill(footer, opts))<span class="question-mark">?</span>;
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_header(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write, diagnostic: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Diagnostic)) -&gt; fmt::Result {
+        <span class="kw">let </span>severity_style = <span class="kw">match </span>diagnostic.severity() {
+            <span class="prelude-val">Some</span>(Severity::Error) | <span class="prelude-val">None </span>=&gt; <span class="self">self</span>.theme.styles.error,
+            <span class="prelude-val">Some</span>(Severity::Warning) =&gt; <span class="self">self</span>.theme.styles.warning,
+            <span class="prelude-val">Some</span>(Severity::Advice) =&gt; <span class="self">self</span>.theme.styles.advice,
+        };
+        <span class="kw">let </span><span class="kw-2">mut </span>header = String::new();
+        <span class="kw">if </span><span class="self">self</span>.links == LinkStyle::Link &amp;&amp; diagnostic.url().is_some() {
+            <span class="kw">let </span>url = diagnostic.url().unwrap(); <span class="comment">// safe
+            </span><span class="kw">let </span>code = <span class="kw">if let </span><span class="prelude-val">Some</span>(code) = diagnostic.code() {
+                <span class="macro">format!</span>(<span class="string">&quot;{} &quot;</span>, code)
+            } <span class="kw">else </span>{
+                <span class="string">&quot;&quot;</span>.to_string()
+            };
+            <span class="kw">let </span>link = <span class="macro">format!</span>(
+                <span class="string">&quot;\u{1b}]8;;{}\u{1b}\\{}{}\u{1b}]8;;\u{1b}\\&quot;</span>,
+                url,
+                code.style(severity_style),
+                <span class="string">&quot;(link)&quot;</span>.style(<span class="self">self</span>.theme.styles.link)
+            );
+            <span class="macro">write!</span>(header, <span class="string">&quot;{}&quot;</span>, link)<span class="question-mark">?</span>;
+            <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, header)<span class="question-mark">?</span>;
+        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(code) = diagnostic.code() {
+            <span class="macro">write!</span>(header, <span class="string">&quot;{}&quot;</span>, code.style(severity_style),)<span class="question-mark">?</span>;
+            <span class="kw">if </span><span class="self">self</span>.links == LinkStyle::Text &amp;&amp; diagnostic.url().is_some() {
+                <span class="kw">let </span>url = diagnostic.url().unwrap(); <span class="comment">// safe
+                </span><span class="macro">write!</span>(header, <span class="string">&quot; ({})&quot;</span>, url.style(<span class="self">self</span>.theme.styles.link))<span class="question-mark">?</span>;
+            }
+            <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, header)<span class="question-mark">?</span>;
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_causes(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write, diagnostic: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Diagnostic)) -&gt; fmt::Result {
+        <span class="kw">let </span>(severity_style, severity_icon) = <span class="kw">match </span>diagnostic.severity() {
+            <span class="prelude-val">Some</span>(Severity::Error) | <span class="prelude-val">None </span>=&gt; (<span class="self">self</span>.theme.styles.error, <span class="kw-2">&amp;</span><span class="self">self</span>.theme.characters.error),
+            <span class="prelude-val">Some</span>(Severity::Warning) =&gt; (<span class="self">self</span>.theme.styles.warning, <span class="kw-2">&amp;</span><span class="self">self</span>.theme.characters.warning),
+            <span class="prelude-val">Some</span>(Severity::Advice) =&gt; (<span class="self">self</span>.theme.styles.advice, <span class="kw-2">&amp;</span><span class="self">self</span>.theme.characters.advice),
+        };
+
+        <span class="kw">let </span>initial_indent = <span class="macro">format!</span>(<span class="string">&quot;  {} &quot;</span>, severity_icon.style(severity_style));
+        <span class="kw">let </span>rest_indent = <span class="macro">format!</span>(<span class="string">&quot;  {} &quot;</span>, <span class="self">self</span>.theme.characters.vbar.style(severity_style));
+        <span class="kw">let </span>width = <span class="self">self</span>.termwidth.saturating_sub(<span class="number">2</span>);
+        <span class="kw">let </span>opts = textwrap::Options::new(width)
+            .initial_indent(<span class="kw-2">&amp;</span>initial_indent)
+            .subsequent_indent(<span class="kw-2">&amp;</span>rest_indent);
+
+        <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, textwrap::fill(<span class="kw-2">&amp;</span>diagnostic.to_string(), opts))<span class="question-mark">?</span>;
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>cause_iter) = diagnostic
+            .diagnostic_source()
+            .map(DiagnosticChain::from_diagnostic)
+            .or_else(|| diagnostic.source().map(DiagnosticChain::from_stderror))
+            .map(|it| it.peekable())
+        {
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(error) = cause_iter.next() {
+                <span class="kw">let </span>is_last = cause_iter.peek().is_none();
+                <span class="kw">let </span>char = <span class="kw">if </span>!is_last {
+                    <span class="self">self</span>.theme.characters.lcross
+                } <span class="kw">else </span>{
+                    <span class="self">self</span>.theme.characters.lbot
+                };
+                <span class="kw">let </span>initial_indent = <span class="macro">format!</span>(
+                    <span class="string">&quot;  {}{}{} &quot;</span>,
+                    char, <span class="self">self</span>.theme.characters.hbar, <span class="self">self</span>.theme.characters.rarrow
+                )
+                .style(severity_style)
+                .to_string();
+                <span class="kw">let </span>rest_indent = <span class="macro">format!</span>(
+                    <span class="string">&quot;  {}   &quot;</span>,
+                    <span class="kw">if </span>is_last {
+                        <span class="string">&#39; &#39;
+                    </span>} <span class="kw">else </span>{
+                        <span class="self">self</span>.theme.characters.vbar
+                    }
+                )
+                .style(severity_style)
+                .to_string();
+                <span class="kw">let </span>opts = textwrap::Options::new(width)
+                    .initial_indent(<span class="kw-2">&amp;</span>initial_indent)
+                    .subsequent_indent(<span class="kw-2">&amp;</span>rest_indent);
+                <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, textwrap::fill(<span class="kw-2">&amp;</span>error.to_string(), opts))<span class="question-mark">?</span>;
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_footer(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write, diagnostic: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Diagnostic)) -&gt; fmt::Result {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(help) = diagnostic.help() {
+            <span class="kw">let </span>width = <span class="self">self</span>.termwidth.saturating_sub(<span class="number">4</span>);
+            <span class="kw">let </span>initial_indent = <span class="string">&quot;  help: &quot;</span>.style(<span class="self">self</span>.theme.styles.help).to_string();
+            <span class="kw">let </span>opts = textwrap::Options::new(width)
+                .initial_indent(<span class="kw-2">&amp;</span>initial_indent)
+                .subsequent_indent(<span class="string">&quot;        &quot;</span>);
+            <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, textwrap::fill(<span class="kw-2">&amp;</span>help.to_string(), opts))<span class="question-mark">?</span>;
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_related(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write,
+        diagnostic: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Diagnostic),
+        parent_src: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="kw">dyn </span>SourceCode&gt;,
+    ) -&gt; fmt::Result {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(related) = diagnostic.related() {
+            <span class="macro">writeln!</span>(f)<span class="question-mark">?</span>;
+            <span class="kw">for </span>rel <span class="kw">in </span>related {
+                <span class="kw">match </span>diagnostic.severity() {
+                    <span class="prelude-val">Some</span>(Severity::Error) | <span class="prelude-val">None </span>=&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Error: &quot;</span>)<span class="question-mark">?</span>,
+                    <span class="prelude-val">Some</span>(Severity::Warning) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Warning: &quot;</span>)<span class="question-mark">?</span>,
+                    <span class="prelude-val">Some</span>(Severity::Advice) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Advice: &quot;</span>)<span class="question-mark">?</span>,
+                };
+                <span class="self">self</span>.render_header(f, rel)<span class="question-mark">?</span>;
+                <span class="macro">writeln!</span>(f)<span class="question-mark">?</span>;
+                <span class="self">self</span>.render_causes(f, rel)<span class="question-mark">?</span>;
+                <span class="kw">let </span>src = rel.source_code().or(parent_src);
+                <span class="self">self</span>.render_snippets(f, rel, src)<span class="question-mark">?</span>;
+                <span class="self">self</span>.render_footer(f, rel)<span class="question-mark">?</span>;
+                <span class="self">self</span>.render_related(f, rel, src)<span class="question-mark">?</span>;
+            }
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_snippets(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write,
+        diagnostic: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Diagnostic),
+        opt_source: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="kw">dyn </span>SourceCode&gt;,
+    ) -&gt; fmt::Result {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = opt_source {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(labels) = diagnostic.labels() {
+                <span class="kw">let </span><span class="kw-2">mut </span>labels = labels.collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+                labels.sort_unstable_by_key(|l| l.inner().offset());
+                <span class="kw">if </span>!labels.is_empty() {
+                    <span class="kw">let </span>contents = labels
+                        .iter()
+                        .map(|label| {
+                            source.read_span(label.inner(), <span class="self">self</span>.context_lines, <span class="self">self</span>.context_lines)
+                        })
+                        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;Box&lt;<span class="kw">dyn </span>SpanContents&lt;<span class="lifetime">&#39;_</span>&gt;&gt;&gt;, MietteError&gt;&gt;()
+                        .map_err(|<span class="kw">_</span>| fmt::Error)<span class="question-mark">?</span>;
+                    <span class="kw">let </span><span class="kw-2">mut </span>contexts = Vec::new();
+                    <span class="kw">for </span>(right, right_conts) <span class="kw">in </span>labels.iter().cloned().zip(contents.iter()) {
+                        <span class="kw">if </span>contexts.is_empty() {
+                            contexts.push((right, right_conts));
+                        } <span class="kw">else </span>{
+                            <span class="kw">let </span>(left, left_conts) = contexts.last().unwrap().clone();
+                            <span class="kw">let </span>left_end = left.offset() + left.len();
+                            <span class="kw">let </span>right_end = right.offset() + right.len();
+                            <span class="kw">if </span>left_conts.line() + left_conts.line_count() &gt;= right_conts.line() {
+                                <span class="comment">// The snippets will overlap, so we create one Big Chunky Boi
+                                </span><span class="kw">let </span>new_span = LabeledSpan::new(
+                                    left.label().map(String::from),
+                                    left.offset(),
+                                    <span class="kw">if </span>right_end &gt;= left_end {
+                                        <span class="comment">// Right end goes past left end
+                                        </span>right_end - left.offset()
+                                    } <span class="kw">else </span>{
+                                        <span class="comment">// right is contained inside left
+                                        </span>left.len()
+                                    },
+                                );
+                                <span class="kw">if </span>source
+                                    .read_span(
+                                        new_span.inner(),
+                                        <span class="self">self</span>.context_lines,
+                                        <span class="self">self</span>.context_lines,
+                                    )
+                                    .is_ok()
+                                {
+                                    contexts.pop();
+                                    contexts.push((
+                                        <span class="comment">// We&#39;ll throw this away later
+                                        </span>new_span, left_conts,
+                                    ));
+                                } <span class="kw">else </span>{
+                                    contexts.push((right, right_conts));
+                                }
+                            } <span class="kw">else </span>{
+                                contexts.push((right, right_conts));
+                            }
+                        }
+                    }
+                    <span class="kw">for </span>(ctx, <span class="kw">_</span>) <span class="kw">in </span>contexts {
+                        <span class="self">self</span>.render_context(f, source, <span class="kw-2">&amp;</span>ctx, <span class="kw-2">&amp;</span>labels[..])<span class="question-mark">?</span>;
+                    }
+                }
+            }
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_context&lt;<span class="lifetime">&#39;a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write,
+        source: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw">dyn </span>SourceCode,
+        context: <span class="kw-2">&amp;</span>LabeledSpan,
+        labels: <span class="kw-2">&amp;</span>[LabeledSpan],
+    ) -&gt; fmt::Result {
+        <span class="kw">let </span>(contents, lines) = <span class="self">self</span>.get_lines(source, context.inner())<span class="question-mark">?</span>;
+
+        <span class="comment">// sorting is your friend
+        </span><span class="kw">let </span>labels = labels
+            .iter()
+            .zip(<span class="self">self</span>.theme.styles.highlights.iter().cloned().cycle())
+            .map(|(label, st)| FancySpan::new(label.label().map(String::from), <span class="kw-2">*</span>label.inner(), st))
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+
+        <span class="comment">// The max number of gutter-lines that will be active at any given
+        // point. We need this to figure out indentation, so we do one loop
+        // over the lines to see what the damage is gonna be.
+        </span><span class="kw">let </span><span class="kw-2">mut </span>max_gutter = <span class="number">0usize</span>;
+        <span class="kw">for </span>line <span class="kw">in </span><span class="kw-2">&amp;</span>lines {
+            <span class="kw">let </span><span class="kw-2">mut </span>num_highlights = <span class="number">0</span>;
+            <span class="kw">for </span>hl <span class="kw">in </span><span class="kw-2">&amp;</span>labels {
+                <span class="kw">if </span>!line.span_line_only(hl) &amp;&amp; line.span_applies(hl) {
+                    num_highlights += <span class="number">1</span>;
+                }
+            }
+            max_gutter = std::cmp::max(max_gutter, num_highlights);
+        }
+
+        <span class="comment">// Oh and one more thing: We need to figure out how much room our line
+        // numbers need!
+        </span><span class="kw">let </span>linum_width = lines[..]
+            .last()
+            .expect(<span class="string">&quot;get_lines should always return at least one line?&quot;</span>)
+            .line_number
+            .to_string()
+            .len();
+
+        <span class="comment">// Header
+        </span><span class="macro">write!</span>(
+            f,
+            <span class="string">&quot;{}{}{}&quot;</span>,
+            <span class="string">&quot; &quot;</span>.repeat(linum_width + <span class="number">2</span>),
+            <span class="self">self</span>.theme.characters.ltop,
+            <span class="self">self</span>.theme.characters.hbar,
+        )<span class="question-mark">?</span>;
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(source_name) = contents.name() {
+            <span class="kw">let </span>source_name = source_name.style(<span class="self">self</span>.theme.styles.link);
+            <span class="macro">writeln!</span>(
+                f,
+                <span class="string">&quot;[{}:{}:{}]&quot;</span>,
+                source_name,
+                contents.line() + <span class="number">1</span>,
+                contents.column() + <span class="number">1
+            </span>)<span class="question-mark">?</span>;
+        } <span class="kw">else if </span>lines.len() == <span class="number">1 </span>{
+            <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.theme.characters.hbar.to_string().repeat(<span class="number">3</span>))<span class="question-mark">?</span>;
+        } <span class="kw">else </span>{
+            <span class="macro">writeln!</span>(f, <span class="string">&quot;[{}:{}]&quot;</span>, contents.line() + <span class="number">1</span>, contents.column() + <span class="number">1</span>)<span class="question-mark">?</span>;
+        }
+
+        <span class="comment">// Now it&#39;s time for the fun part--actually rendering everything!
+        </span><span class="kw">for </span>line <span class="kw">in </span><span class="kw-2">&amp;</span>lines {
+            <span class="comment">// Line number, appropriately padded.
+            </span><span class="self">self</span>.write_linum(f, linum_width, line.line_number)<span class="question-mark">?</span>;
+
+            <span class="comment">// Then, we need to print the gutter, along with any fly-bys We
+            // have separate gutters depending on whether we&#39;re on the actual
+            // line, or on one of the &quot;highlight lines&quot; below it.
+            </span><span class="self">self</span>.render_line_gutter(f, max_gutter, line, <span class="kw-2">&amp;</span>labels)<span class="question-mark">?</span>;
+
+            <span class="comment">// And _now_ we can print out the line text itself!
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(w) = <span class="self">self</span>.tab_width {
+                <span class="kw">let </span>text = line.text.replace(<span class="string">&#39;\t&#39;</span>, <span class="string">&quot; &quot;</span>.repeat(w).as_str());
+                <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, text)<span class="question-mark">?</span>;
+            } <span class="kw">else </span>{
+                <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, line.text)<span class="question-mark">?</span>;
+            };
+
+            <span class="comment">// Next, we write all the highlights that apply to this particular line.
+            </span><span class="kw">let </span>(single_line, multi_line): (Vec&lt;<span class="kw">_</span>&gt;, Vec&lt;<span class="kw">_</span>&gt;) = labels
+                .iter()
+                .filter(|hl| line.span_applies(hl))
+                .partition(|hl| line.span_line_only(hl));
+            <span class="kw">if </span>!single_line.is_empty() {
+                <span class="comment">// no line number!
+                </span><span class="self">self</span>.write_no_linum(f, linum_width)<span class="question-mark">?</span>;
+                <span class="comment">// gutter _again_
+                </span><span class="self">self</span>.render_highlight_gutter(f, max_gutter, line, <span class="kw-2">&amp;</span>labels)<span class="question-mark">?</span>;
+                <span class="self">self</span>.render_single_line_highlights(
+                    f,
+                    line,
+                    linum_width,
+                    max_gutter,
+                    <span class="kw-2">&amp;</span>single_line,
+                    <span class="kw-2">&amp;</span>labels,
+                )<span class="question-mark">?</span>;
+            }
+            <span class="kw">for </span>hl <span class="kw">in </span>multi_line {
+                <span class="kw">if </span>hl.label().is_some() &amp;&amp; line.span_ends(hl) &amp;&amp; !line.span_starts(hl) {
+                    <span class="comment">// no line number!
+                    </span><span class="self">self</span>.write_no_linum(f, linum_width)<span class="question-mark">?</span>;
+                    <span class="comment">// gutter _again_
+                    </span><span class="self">self</span>.render_highlight_gutter(f, max_gutter, line, <span class="kw-2">&amp;</span>labels)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.render_multi_line_end(f, hl)<span class="question-mark">?</span>;
+                }
+            }
+        }
+        <span class="macro">writeln!</span>(
+            f,
+            <span class="string">&quot;{}{}{}&quot;</span>,
+            <span class="string">&quot; &quot;</span>.repeat(linum_width + <span class="number">2</span>),
+            <span class="self">self</span>.theme.characters.lbot,
+            <span class="self">self</span>.theme.characters.hbar.to_string().repeat(<span class="number">4</span>),
+        )<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_line_gutter(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write,
+        max_gutter: usize,
+        line: <span class="kw-2">&amp;</span>Line,
+        highlights: <span class="kw-2">&amp;</span>[FancySpan],
+    ) -&gt; fmt::Result {
+        <span class="kw">if </span>max_gutter == <span class="number">0 </span>{
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+        }
+        <span class="kw">let </span>chars = <span class="kw-2">&amp;</span><span class="self">self</span>.theme.characters;
+        <span class="kw">let </span><span class="kw-2">mut </span>gutter = String::new();
+        <span class="kw">let </span>applicable = highlights.iter().filter(|hl| line.span_applies(hl));
+        <span class="kw">let </span><span class="kw-2">mut </span>arrow = <span class="bool-val">false</span>;
+        <span class="kw">for </span>(i, hl) <span class="kw">in </span>applicable.enumerate() {
+            <span class="kw">if </span>line.span_starts(hl) {
+                gutter.push_str(<span class="kw-2">&amp;</span>chars.ltop.style(hl.style).to_string());
+                gutter.push_str(
+                    <span class="kw-2">&amp;</span>chars
+                        .hbar
+                        .to_string()
+                        .repeat(max_gutter.saturating_sub(i))
+                        .style(hl.style)
+                        .to_string(),
+                );
+                gutter.push_str(<span class="kw-2">&amp;</span>chars.rarrow.style(hl.style).to_string());
+                arrow = <span class="bool-val">true</span>;
+                <span class="kw">break</span>;
+            } <span class="kw">else if </span>line.span_ends(hl) {
+                <span class="kw">if </span>hl.label().is_some() {
+                    gutter.push_str(<span class="kw-2">&amp;</span>chars.lcross.style(hl.style).to_string());
+                } <span class="kw">else </span>{
+                    gutter.push_str(<span class="kw-2">&amp;</span>chars.lbot.style(hl.style).to_string());
+                }
+                gutter.push_str(
+                    <span class="kw-2">&amp;</span>chars
+                        .hbar
+                        .to_string()
+                        .repeat(max_gutter.saturating_sub(i))
+                        .style(hl.style)
+                        .to_string(),
+                );
+                gutter.push_str(<span class="kw-2">&amp;</span>chars.rarrow.style(hl.style).to_string());
+                arrow = <span class="bool-val">true</span>;
+                <span class="kw">break</span>;
+            } <span class="kw">else if </span>line.span_flyby(hl) {
+                gutter.push_str(<span class="kw-2">&amp;</span>chars.vbar.style(hl.style).to_string());
+            } <span class="kw">else </span>{
+                gutter.push(<span class="string">&#39; &#39;</span>);
+            }
+        }
+        <span class="macro">write!</span>(
+            f,
+            <span class="string">&quot;{}{}&quot;</span>,
+            gutter,
+            <span class="string">&quot; &quot;</span>.repeat(
+                <span class="kw">if </span>arrow { <span class="number">1 </span>} <span class="kw">else </span>{ <span class="number">3 </span>} + max_gutter.saturating_sub(gutter.chars().count())
+            )
+        )<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_highlight_gutter(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write,
+        max_gutter: usize,
+        line: <span class="kw-2">&amp;</span>Line,
+        highlights: <span class="kw-2">&amp;</span>[FancySpan],
+    ) -&gt; fmt::Result {
+        <span class="kw">if </span>max_gutter == <span class="number">0 </span>{
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+        }
+        <span class="kw">let </span>chars = <span class="kw-2">&amp;</span><span class="self">self</span>.theme.characters;
+        <span class="kw">let </span><span class="kw-2">mut </span>gutter = String::new();
+        <span class="kw">let </span>applicable = highlights.iter().filter(|hl| line.span_applies(hl));
+        <span class="kw">for </span>(i, hl) <span class="kw">in </span>applicable.enumerate() {
+            <span class="kw">if </span>!line.span_line_only(hl) &amp;&amp; line.span_ends(hl) {
+                gutter.push_str(<span class="kw-2">&amp;</span>chars.lbot.style(hl.style).to_string());
+                gutter.push_str(
+                    <span class="kw-2">&amp;</span>chars
+                        .hbar
+                        .to_string()
+                        .repeat(max_gutter.saturating_sub(i) + <span class="number">2</span>)
+                        .style(hl.style)
+                        .to_string(),
+                );
+                <span class="kw">break</span>;
+            } <span class="kw">else </span>{
+                gutter.push_str(<span class="kw-2">&amp;</span>chars.vbar.style(hl.style).to_string());
+            }
+        }
+        <span class="macro">write!</span>(f, <span class="string">&quot;{:width$}&quot;</span>, gutter, width = max_gutter + <span class="number">1</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>write_linum(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write, width: usize, linum: usize) -&gt; fmt::Result {
+        <span class="macro">write!</span>(
+            f,
+            <span class="string">&quot; {:width$} {} &quot;</span>,
+            linum.style(<span class="self">self</span>.theme.styles.linum),
+            <span class="self">self</span>.theme.characters.vbar,
+            width = width
+        )<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>write_no_linum(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write, width: usize) -&gt; fmt::Result {
+        <span class="macro">write!</span>(
+            f,
+            <span class="string">&quot; {:width$} {} &quot;</span>,
+            <span class="string">&quot;&quot;</span>,
+            <span class="self">self</span>.theme.characters.vbar_break,
+            width = width
+        )<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_single_line_highlights(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write,
+        line: <span class="kw-2">&amp;</span>Line,
+        linum_width: usize,
+        max_gutter: usize,
+        single_liners: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>FancySpan],
+        all_highlights: <span class="kw-2">&amp;</span>[FancySpan],
+    ) -&gt; fmt::Result {
+        <span class="kw">let </span><span class="kw-2">mut </span>underlines = String::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>highest = <span class="number">0</span>;
+
+        <span class="kw">let </span>chars = <span class="kw-2">&amp;</span><span class="self">self</span>.theme.characters;
+        <span class="kw">for </span>hl <span class="kw">in </span>single_liners {
+            <span class="kw">let </span>hl_len = std::cmp::max(<span class="number">1</span>, hl.len());
+
+            <span class="kw">let </span>local_offset = <span class="kw">if let </span><span class="prelude-val">Some</span>(w) = <span class="self">self</span>.tab_width {
+                <span class="comment">// Only count tabs that affect the position of the highlighted
+                // line and ignore tabs past the span.
+                </span><span class="kw">let </span>tab_count = <span class="kw-2">&amp;</span>line.text[..hl.offset() - line.offset].matches(<span class="string">&#39;\t&#39;</span>).count();
+                <span class="kw">let </span>tabs_as_spaces = tab_count * w - tab_count;
+                hl.offset() - line.offset + tabs_as_spaces
+            } <span class="kw">else </span>{
+                hl.offset() - line.offset
+            };
+
+            <span class="kw">let </span>vbar_offset = local_offset + (hl_len / <span class="number">2</span>);
+            <span class="kw">let </span>num_left = vbar_offset - local_offset;
+            <span class="kw">let </span>num_right = local_offset + hl_len - vbar_offset - <span class="number">1</span>;
+            <span class="kw">let </span>start = std::cmp::max(local_offset, highest);
+            <span class="kw">let </span>end = local_offset + hl_len;
+            <span class="kw">if </span>start &lt; end {
+                underlines.push_str(
+                    <span class="kw-2">&amp;</span><span class="macro">format!</span>(
+                        <span class="string">&quot;{:width$}{}{}{}&quot;</span>,
+                        <span class="string">&quot;&quot;</span>,
+                        chars.underline.to_string().repeat(num_left),
+                        <span class="kw">if </span>hl.len() == <span class="number">0 </span>{
+                            chars.uarrow
+                        } <span class="kw">else if </span>hl.label().is_some() {
+                            chars.underbar
+                        } <span class="kw">else </span>{
+                            chars.underline
+                        },
+                        chars.underline.to_string().repeat(num_right),
+                        width = local_offset.saturating_sub(highest),
+                    )
+                    .style(hl.style)
+                    .to_string(),
+                );
+            }
+            highest = std::cmp::max(highest, end);
+        }
+        <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, underlines)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>vbar_offsets: Vec&lt;<span class="kw">_</span>&gt; = single_liners
+            .iter()
+            .map(|hl| {
+                <span class="kw">let </span>local_offset = <span class="kw">if let </span><span class="prelude-val">Some</span>(w) = <span class="self">self</span>.tab_width {
+                    <span class="comment">// Only count tabs that affect the position of the
+                    // highlighted line and ignore tabs past the span.
+                    </span><span class="kw">let </span>tab_count = <span class="kw-2">&amp;</span>line.text[..hl.offset() - line.offset].matches(<span class="string">&#39;\t&#39;</span>).count();
+                    <span class="kw">let </span>tabs_as_spaces = tab_count * w - tab_count;
+                    hl.offset() - line.offset + tabs_as_spaces
+                } <span class="kw">else </span>{
+                    hl.offset() - line.offset
+                };
+                (hl, local_offset + (std::cmp::max(<span class="number">1</span>, hl.len()) / <span class="number">2</span>))
+            })
+            .collect();
+        <span class="kw">for </span>hl <span class="kw">in </span>single_liners.iter().rev() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(label) = hl.label() {
+                <span class="self">self</span>.write_no_linum(f, linum_width)<span class="question-mark">?</span>;
+                <span class="self">self</span>.render_highlight_gutter(f, max_gutter, line, all_highlights)<span class="question-mark">?</span>;
+                <span class="kw">let </span><span class="kw-2">mut </span>curr_offset = <span class="number">1usize</span>;
+                <span class="kw">for </span>(offset_hl, vbar_offset) <span class="kw">in </span><span class="kw-2">&amp;</span>vbar_offsets {
+                    <span class="kw">while </span>curr_offset &lt; <span class="kw-2">*</span>vbar_offset + <span class="number">1 </span>{
+                        <span class="macro">write!</span>(f, <span class="string">&quot; &quot;</span>)<span class="question-mark">?</span>;
+                        curr_offset += <span class="number">1</span>;
+                    }
+                    <span class="kw">if </span><span class="kw-2">*</span>offset_hl != hl {
+                        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, chars.vbar.to_string().style(offset_hl.style))<span class="question-mark">?</span>;
+                        curr_offset += <span class="number">1</span>;
+                    } <span class="kw">else </span>{
+                        <span class="kw">let </span>lines = <span class="macro">format!</span>(
+                            <span class="string">&quot;{}{} {}&quot;</span>,
+                            chars.lbot,
+                            chars.hbar.to_string().repeat(<span class="number">2</span>),
+                            label,
+                        );
+                        <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, lines.style(hl.style))<span class="question-mark">?</span>;
+                        <span class="kw">break</span>;
+                    }
+                }
+            }
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>render_multi_line_end(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>fmt::Write, hl: <span class="kw-2">&amp;</span>FancySpan) -&gt; fmt::Result {
+        <span class="macro">writeln!</span>(
+            f,
+            <span class="string">&quot;{} {}&quot;</span>,
+            <span class="self">self</span>.theme.characters.hbar.style(hl.style),
+            hl.label().unwrap_or_else(|| <span class="string">&quot;&quot;</span>.into()),
+        )<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>get_lines&lt;<span class="lifetime">&#39;a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        source: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw">dyn </span>SourceCode,
+        context_span: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SourceSpan,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Box&lt;<span class="kw">dyn </span>SpanContents&lt;<span class="lifetime">&#39;a</span>&gt; + <span class="lifetime">&#39;a</span>&gt;, Vec&lt;Line&gt;), fmt::Error&gt; {
+        <span class="kw">let </span>context_data = source
+            .read_span(context_span, <span class="self">self</span>.context_lines, <span class="self">self</span>.context_lines)
+            .map_err(|<span class="kw">_</span>| fmt::Error)<span class="question-mark">?</span>;
+        <span class="kw">let </span>context = std::str::from_utf8(context_data.data()).expect(<span class="string">&quot;Bad utf8 detected&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>line = context_data.line();
+        <span class="kw">let </span><span class="kw-2">mut </span>column = context_data.column();
+        <span class="kw">let </span><span class="kw-2">mut </span>offset = context_data.span().offset();
+        <span class="kw">let </span><span class="kw-2">mut </span>line_offset = offset;
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = context.chars().peekable();
+        <span class="kw">let </span><span class="kw-2">mut </span>line_str = String::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>lines = Vec::new();
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(char) = iter.next() {
+            offset += char.len_utf8();
+            <span class="kw">let </span><span class="kw-2">mut </span>at_end_of_file = <span class="bool-val">false</span>;
+            <span class="kw">match </span>char {
+                <span class="string">&#39;\r&#39; </span>=&gt; {
+                    <span class="kw">if </span>iter.next_if_eq(<span class="kw-2">&amp;</span><span class="string">&#39;\n&#39;</span>).is_some() {
+                        offset += <span class="number">1</span>;
+                        line += <span class="number">1</span>;
+                        column = <span class="number">0</span>;
+                    } <span class="kw">else </span>{
+                        line_str.push(char);
+                        column += <span class="number">1</span>;
+                    }
+                    at_end_of_file = iter.peek().is_none();
+                }
+                <span class="string">&#39;\n&#39; </span>=&gt; {
+                    at_end_of_file = iter.peek().is_none();
+                    line += <span class="number">1</span>;
+                    column = <span class="number">0</span>;
+                }
+                <span class="kw">_ </span>=&gt; {
+                    line_str.push(char);
+                    column += <span class="number">1</span>;
+                }
+            }
+
+            <span class="kw">if </span>iter.peek().is_none() &amp;&amp; !at_end_of_file {
+                line += <span class="number">1</span>;
+            }
+
+            <span class="kw">if </span>column == <span class="number">0 </span>|| iter.peek().is_none() {
+                lines.push(Line {
+                    line_number: line,
+                    offset: line_offset,
+                    length: offset - line_offset,
+                    text: line_str.clone(),
+                });
+                line_str.clear();
+                line_offset = offset;
+            }
+        }
+        <span class="prelude-val">Ok</span>((context_data, lines))
+    }
+}
+
+<span class="kw">impl </span>ReportHandler <span class="kw">for </span>GraphicalReportHandler {
+    <span class="kw">fn </span>debug(<span class="kw-2">&amp;</span><span class="self">self</span>, diagnostic: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Diagnostic), f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="kw">if </span>f.alternate() {
+            <span class="kw">return </span>fmt::Debug::fmt(diagnostic, f);
+        }
+
+        <span class="self">self</span>.render_report(f, diagnostic)
+    }
+}
+
+<span class="comment">/*
+Support types
+*/
+
+</span><span class="attribute">#[derive(Debug)]
+</span><span class="kw">struct </span>Line {
+    line_number: usize,
+    offset: usize,
+    length: usize,
+    text: String,
+}
+
+<span class="kw">impl </span>Line {
+    <span class="kw">fn </span>span_line_only(<span class="kw-2">&amp;</span><span class="self">self</span>, span: <span class="kw-2">&amp;</span>FancySpan) -&gt; bool {
+        span.offset() &gt;= <span class="self">self</span>.offset &amp;&amp; span.offset() + span.len() &lt;= <span class="self">self</span>.offset + <span class="self">self</span>.length
+    }
+
+    <span class="kw">fn </span>span_applies(<span class="kw-2">&amp;</span><span class="self">self</span>, span: <span class="kw-2">&amp;</span>FancySpan) -&gt; bool {
+        <span class="kw">let </span>spanlen = <span class="kw">if </span>span.len() == <span class="number">0 </span>{ <span class="number">1 </span>} <span class="kw">else </span>{ span.len() };
+        <span class="comment">// Span starts in this line
+        </span>(span.offset() &gt;= <span class="self">self</span>.offset &amp;&amp; span.offset() &lt; <span class="self">self</span>.offset + <span class="self">self</span>.length)
+        <span class="comment">// Span passes through this line
+        </span>|| (span.offset() &lt; <span class="self">self</span>.offset &amp;&amp; span.offset() + spanlen &gt; <span class="self">self</span>.offset + <span class="self">self</span>.length) <span class="comment">//todo
+        // Span ends on this line
+        </span>|| (span.offset() + spanlen &gt; <span class="self">self</span>.offset &amp;&amp; span.offset() + spanlen &lt;= <span class="self">self</span>.offset + <span class="self">self</span>.length)
+    }
+
+    <span class="comment">// A &#39;flyby&#39; is a multi-line span that technically covers this line, but
+    // does not begin or end within the line itself. This method is used to
+    // calculate gutters.
+    </span><span class="kw">fn </span>span_flyby(<span class="kw-2">&amp;</span><span class="self">self</span>, span: <span class="kw-2">&amp;</span>FancySpan) -&gt; bool {
+        <span class="comment">// The span itself starts before this line&#39;s starting offset (so, in a
+        // prev line).
+        </span>span.offset() &lt; <span class="self">self</span>.offset
+            <span class="comment">// ...and it stops after this line&#39;s end.
+            </span>&amp;&amp; span.offset() + span.len() &gt; <span class="self">self</span>.offset + <span class="self">self</span>.length
+    }
+
+    <span class="comment">// Does this line contain the *beginning* of this multiline span?
+    // This assumes self.span_applies() is true already.
+    </span><span class="kw">fn </span>span_starts(<span class="kw-2">&amp;</span><span class="self">self</span>, span: <span class="kw-2">&amp;</span>FancySpan) -&gt; bool {
+        span.offset() &gt;= <span class="self">self</span>.offset
+    }
+
+    <span class="comment">// Does this line contain the *end* of this multiline span?
+    // This assumes self.span_applies() is true already.
+    </span><span class="kw">fn </span>span_ends(<span class="kw-2">&amp;</span><span class="self">self</span>, span: <span class="kw-2">&amp;</span>FancySpan) -&gt; bool {
+        span.offset() + span.len() &gt;= <span class="self">self</span>.offset
+            &amp;&amp; span.offset() + span.len() &lt;= <span class="self">self</span>.offset + <span class="self">self</span>.length
+    }
+}
+
+<span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">struct </span>FancySpan {
+    label: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    span: SourceSpan,
+    style: Style,
+}
+
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>FancySpan {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="self">self</span>.label == other.label &amp;&amp; <span class="self">self</span>.span == other.span
+    }
+}
+
+<span class="kw">impl </span>FancySpan {
+    <span class="kw">fn </span>new(label: <span class="prelude-ty">Option</span>&lt;String&gt;, span: SourceSpan, style: Style) -&gt; <span class="self">Self </span>{
+        FancySpan { label, span, style }
+    }
+
+    <span class="kw">fn </span>style(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Style {
+        <span class="self">self</span>.style
+    }
+
+    <span class="kw">fn </span>label(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="self">self</span>.label
+            .as_ref()
+            .map(|l| l.style(<span class="self">self</span>.style()).to_string())
+    }
+
+    <span class="kw">fn </span>offset(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.span.offset()
+    }
+
+    <span class="kw">fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.span.len()
+    }
+}
+</code></pre></div>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="miette" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (e7119a030 2022-09-22)" ></div></body></html>
